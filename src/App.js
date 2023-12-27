@@ -1,25 +1,31 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import InputComponent from './InputComponent';
+import RecipeListComponent from './RecipeListComponent';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App = () => {
+    const [fridgeItems, setFridgeItems] = useState([]); // Initialize as an empty array
+    const [isSubmitted, setIsSubmitted] = useState(false);
+
+    const handleAddItem = (item) => {
+        setFridgeItems(prevItems => [...prevItems, item]);
+    };
+
+    const handleSubmit = () => {
+        setIsSubmitted(true);
+        console.log(isSubmitted)
+    };
+
+    return (
+        <div className="App">
+            <InputComponent 
+                onAddItem={handleAddItem} 
+                fridgeItems={fridgeItems} 
+            />
+            <button onClick={handleSubmit}>Get Recipes</button>
+            {isSubmitted && <RecipeListComponent fridgeItems={fridgeItems} />}
+        </div>
+    );
 }
 
 export default App;
