@@ -22,7 +22,7 @@ const RecipeListComponent = ({ fridgeItems }) => {
                         messages: [
                             {
                                 role: 'user',
-                                content: 'Please generate recipes given these ingredients, only assume that the person has basic condiments like salt and pepper: ' + fridgeItems.join(", "),
+                                content: 'Please generate no more than 5 recipes given these ingredients, only assume that the person has basic condiments like salt and pepper: ' + fridgeItems.join(", "),
                             }
                         ],
                     },
