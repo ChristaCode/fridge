@@ -19,7 +19,7 @@ const App = () => {
 
     return (
         <div className="App">
-            <img src={logo} alt="FeastFinder Logo" />
+            <img src={logo} alt="FeastFinder Logo" style={{ maxWidth: '100px', height: 'auto' }} />
             <InputComponent 
                 onAddItem={handleAddItem} 
                 fridgeItems={fridgeItems} 
