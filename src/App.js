@@ -13,7 +13,7 @@ const App = () => {
 
     const handleSubmit = () => {
         setIsSubmitted(true);
-        console.log(isSubmitted)
+        console.log(isSubmitted);
     };
 
     return (

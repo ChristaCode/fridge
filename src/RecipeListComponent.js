@@ -18,18 +18,18 @@ const RecipeListComponent = ({ fridgeItems }) => {
                 const response = await axios.post(
                     'https://api.openai.com/v1/chat/completions',
                     {
-                        model: 'gpt-3.5-turbo',
+                        model: 'gpt-4',
                         messages: [
                             {
                                 role: 'user',
-                                content: 'please generate recipes given these ingredients, only assume that the person has basic condiments like salt and pepper: ' + fridgeItems.join(", "),
+                                content: 'Please generate recipes given these ingredients, only assume that the person has basic condiments like salt and pepper: ' + fridgeItems.join(", "),
                             }
                         ],
                     },
                     {
                         headers: {
                             'Content-Type': 'application/json',
-                            Authorization: 'Bearer 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', // Use the API key from environment variables
+                            Authorization: 'Bearer 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',  // Use the API key from environment variables
                         },
                     }
                 );
@@ -48,27 +48,84 @@ const RecipeListComponent = ({ fridgeItems }) => {
     }, [fridgeItems]);
 
     const parseRecipes = (responseString) => {
-        const recipeSections = responseString.split(/\d+\.\s/).slice(1); 
-        return recipeSections.map(section => {
-            const [title, ...rest] = section.split('\n\n');
-            return { title, content: rest.join('\n\n') };
+        const recipes = [];
+        const recipeSections = responseString.split(/Recipe \d+:/);
+    
+        recipeSections.forEach((section) => {
+            if (section.trim() === '') return;
+    
+            const titleAndRest = section.split('\n\n');
+            const title = titleAndRest[0].trim();
+            const rest = titleAndRest.slice(1).join('\n\n');
+    
+            const ingredientsLabelIndex = rest.indexOf('Ingredients');
+            const instructionsLabelIndex = rest.indexOf('Instructions');
+    
+            if (ingredientsLabelIndex === -1 || instructionsLabelIndex === -1) {
+                // If we don't have both ingredients and instructions, skip this section.
+                return;
+            }
+    
+            const ingredientsText = rest.substring(
+                ingredientsLabelIndex + 'Ingredients:'.length,
+                instructionsLabelIndex
+            );
+    
+            const instructionsText = rest.substring(
+                instructionsLabelIndex + 'Instructions:'.length
+            );
+    
+            // Split ingredients by newline and filter out any empty lines.
+            const ingredients = ingredientsText
+                .split('\n')
+                .filter((line) => line.trim() !== '')
+                .map((ingredient) => ingredient.trim().replace(/^- /, '')); // Remove bullet points.
+    
+            // Split instructions by newline and filter out any empty lines.
+            const instructions = instructionsText
+                .split('\n')
+                .filter((line) => line.trim() !== '')
+                .join('\n'); // Rejoin to keep formatting for display.
+    
+            recipes.push({
+                title,
+                ingredients,
+                instructions,
+            });
         });
+    
+        return recipes;
     };
+    
 
     if (isLoading) {
-        return <div>Loading recipes...</div>;
+        return (
+            <div className="loading-container">
+                <div className="loading-spinner"></div>
+            </div>
+        );
     }
 
     if (error) {
         return <div>Error: {error}</div>;
     }
-
     return (
         <div className="recipe-list">
             {recipes.map((recipe, index) => (
                 <div key={index} className="recipe-card">
-                    <h3 className="recipe-title">{recipe.title}</h3>
-                    <p className="recipe-content">{recipe.content}</p>
+                    <h2 className="recipe-title">{recipe.title}</h2>
+                    <h3>Ingredients:</h3>
+                    <ul>
+                        {recipe.ingredients.map((ingredient, i) => (
+                            <li key={i}>{ingredient}</li>
+                        ))}
+                    </ul>
+                    <h3>Instructions:</h3>
+                    <ol>
+                        {recipe.instructions.split('\n').map((instruction, i) => (
+                            <li key={i}>{instruction}</li>
+                        ))}
+                    </ol>
                 </div>
             ))}
         </div>
