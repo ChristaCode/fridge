@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import InputComponent from './InputComponent';
 import RecipeListComponent from './RecipeListComponent';
 import './App.css';
+import logo from './feastFinderLogo.png';
 
 const App = () => {
     const [fridgeItems, setFridgeItems] = useState([]); // Initialize as an empty array
@@ -18,6 +19,7 @@ const App = () => {
 
     return (
         <div className="App">
+            <img src={logo} alt="FeastFinder Logo" />
             <InputComponent 
                 onAddItem={handleAddItem} 
                 fridgeItems={fridgeItems} 
