@@ -7,9 +7,22 @@ const RecipeListComponent = ({ fridgeItems }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    const hobbitArr = [{
+            "title": "looks like meats back on the menu, boys",
+            "ingredients": [
+                "2 hobbits"
+            ],
+            "instructions": "Boil em\nMash um\nStick um in a stew"
+    }];
+
     useEffect(() => {
         if (fridgeItems.length === 0) return;
 
+        if (fridgeItems.includes("human meat")){
+            setRecipes(hobbitArr);
+            return;
+        }
+    
         const callGPT = async () => {
             setIsLoading(true);
             setError(null);
