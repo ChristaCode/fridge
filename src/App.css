@@ -29,5 +29,24 @@ input[type="text"] {
   font-size: 16px;
 }
 
-/* Styles for InputComponent and RecipeListComponent */
-/* You can add more specific styles for these components */
+.kitchen-basic {
+  border: 1px solid gray;
+  padding: 10px;
+  margin: 5px;
+  display: inline-block;
+  color: black;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border-radius: 5px;
+}
+
+.kitchen-basic:hover {
+  background-color: #f2f2f2; /* Light grey background on hover */
+  color: #d9534f; /* Change text color on hover */
+}
+
+.kitchen-basic::after {
+  content: ' ✖'; /* Adds a 'delete' cross symbol after the item */
+  color: #d9534f;
+  font-weight: bold;
+}
