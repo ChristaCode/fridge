@@ -72,8 +72,8 @@ const RecipeListComponent = ({ fridgeItems, kitchenBasics }) => {
                         // Check if the ingredient is not part of any item in the combinedItems
                         return !combinedItems.some(item => lowerIngredient.includes(item));
                     });
-                            
-                    if (elementsNotInArray.length > 5) {
+
+                    if (elementsNotInArray.length > 1) {
                         return {
                             title: "delete"
                         };
@@ -189,7 +189,7 @@ const RecipeListComponent = ({ fridgeItems, kitchenBasics }) => {
     }
 
     if (error) {
-        return <div>Error: {error}</div>;
+        return <div style={{margin: '10px'}}>Error: {error}</div>;
     }
     return (
         <div className="recipe-list">
