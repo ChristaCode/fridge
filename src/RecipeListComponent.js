@@ -28,26 +28,6 @@ const RecipeListComponent = ({ fridgeItems, kitchenBasics }) => {
             return;
         }
 
-        const callMealDB = async () => {
-            const newFridgeItems = replaceSpacesWithUnderscores(fridgeItems);
-            let mealDetails = [];
-        
-            try {
-                const response = await axios.get(
-                    'http://www.themealdb.com/api/json/v2/1/filter.php?i=' + newFridgeItems[0],
-                );
-                const mealIDs = parseMealRecipes(response);
-                mealDetails = await fetchMealDetails(mealIDs);
-        
-                // Corrected usage of filter
-                const meals = mealDetails.filter(item => item.title !== "delete");
-    
-                setMealDBRecipes(meals);
-            } catch (error) {
-                console.error('Error fetching meal details:', error);
-            }
-        };
-
         const callMealDBMult = async () => {
             const newFridgeItems = replaceSpacesWithUnderscores(fridgeItems);
             let mealDetails = [];
@@ -57,7 +37,7 @@ const RecipeListComponent = ({ fridgeItems, kitchenBasics }) => {
                     'http://www.themealdb.com/api/json/v2/1/filter.php?i=' + newFridgeItems.join(","),
                 );
                 const mealIDs = parseMealRecipes(response);
-                mealDetails = await fetchMealDetails(mealIDs);
+                mealDetails = await fetchMealDetails(mealIDs, newFridgeItems);
         
                 // Corrected usage of filter
                 const meals = mealDetails.filter(item => item.title !== "delete");
@@ -68,7 +48,7 @@ const RecipeListComponent = ({ fridgeItems, kitchenBasics }) => {
             }
         };
 
-        const fetchMealDetails = async (mealIds) => {
+        const fetchMealDetails = async (mealIds, newFridgeItems) => {
             try {
                 const mealDetailsPromises = mealIds.map(id => 
                     axios.get(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`)
@@ -85,10 +65,15 @@ const RecipeListComponent = ({ fridgeItems, kitchenBasics }) => {
                             ingredients.push(`${meal[`strMeasure${i}`]} ${meal[`strIngredient${i}`]}`);
                         }
                     }
-                    const combinedItems = kitchenBasics.concat(fridgeItems);
-                    const elementsNotInArray = ingredients.filter(item => !combinedItems.includes(item));
-
-                    if (elementsNotInArray.length > 3) {
+                    const combinedItems = kitchenBasics.concat(newFridgeItems);
+                    const elementsNotInArray = ingredients.filter(ingredient => {
+                        // Convert ingredient to lowercase for case-insensitive comparison
+                        const lowerIngredient = ingredient.toLowerCase();
+                        // Check if the ingredient is not part of any item in the combinedItems
+                        return !combinedItems.some(item => lowerIngredient.includes(item));
+                    });
+                            
+                    if (elementsNotInArray.length > 5) {
                         return {
                             title: "delete"
                         };
@@ -96,6 +81,7 @@ const RecipeListComponent = ({ fridgeItems, kitchenBasics }) => {
                     return {
                         title: meal.strMeal,
                         ingredients: ingredients,
+                        elementsNotInArray, // include this to track which items are not in the array
                         instructions: meal.strInstructions.split(/\r\n|\r|\n/).filter(line => line.trim() !== ''), // Split instructions by new lines and remove empty lines
                         thumbnail: meal.strMealThumb, // Thumbnail URL
                     };
@@ -105,6 +91,7 @@ const RecipeListComponent = ({ fridgeItems, kitchenBasics }) => {
                 return [];
             }
         };
+        
 
         const callGPT = async () => {
             setIsLoading(true);
@@ -140,7 +127,7 @@ const RecipeListComponent = ({ fridgeItems, kitchenBasics }) => {
             }
         };
 
-        callMealDB();
+        // callMealDB();
         callMealDBMult();
         callGPT();
     }, [fridgeItems]);
@@ -199,7 +186,7 @@ const RecipeListComponent = ({ fridgeItems, kitchenBasics }) => {
         const meals = response.data.meals;
         const mealIds = meals.map(meal => meal.idMeal);
         return mealIds;
-    }    
+    }
 
     if (error) {
         return <div>Error: {error}</div>;
@@ -207,14 +194,16 @@ const RecipeListComponent = ({ fridgeItems, kitchenBasics }) => {
     return (
         <div className="recipe-list">
             {mealDBRecipes.map((recipe, index) => (
-                <div key={index} className="recipe-card">
-                    <h2 className="recipe-title">{recipe.title}</h2>
-                    <h3>Ingredients:</h3>
-                    <ul>
-                        {recipe.ingredients.map((ingredient, i) => (
-                            <li key={i}>{ingredient}</li>
-                        ))}
-                    </ul>
+            <div key={index} className="recipe-card">
+                <h2 className="recipe-title">{recipe.title}</h2>
+                <h3>Ingredients:</h3>
+                <ul>
+                    {recipe.ingredients.map((ingredient, i) => (
+                        <li key={i} className={recipe.elementsNotInArray.includes(ingredient) ? 'red-text' : ''}>
+                            {ingredient}
+                        </li>
+                    ))}
+                </ul>
                     <h3>Instructions:</h3>
                     <ol>
                         {recipe.instructions.map((instruction, i) => (
