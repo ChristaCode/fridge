@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 const InputComponent = ({ onAddItem, fridgeItems }) => {
     const [item, setItem] = useState('');
     const [isDuplicate, setIsDuplicate] = useState(false);
+    const [kitchenBasics, setKitchenBasics] = useState(["salt", "pepper", "flour", "baking soda", "olive oil", "sugar", "mayonnaise", "ketchup", "garlic", "onion"]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -13,6 +14,10 @@ const InputComponent = ({ onAddItem, fridgeItems }) => {
         } else if (fridgeItems.includes(item)) {
             setIsDuplicate(true);
         }
+    };
+
+    const handleDeleteBasic = (basic) => {
+        setKitchenBasics(kitchenBasics.filter(item => item !== basic));
     };
 
     return (
@@ -28,6 +33,17 @@ const InputComponent = ({ onAddItem, fridgeItems }) => {
                 <button type="submit">Add</button>
             </form>
             {isDuplicate && <p style={{ color: 'red' }}>Item already exists in the fridge.</p>}
+                <div style={{ marginTop: '20px' }}>
+                    {kitchenBasics.map((basic) => (
+                        <div 
+                            key={basic}
+                            className="kitchen-basic"
+                            onClick={() => handleDeleteBasic(basic)}
+                        >
+                            {basic}
+                        </div>
+                    ))}
+                </div>
             <div style={{ marginTop: '20px' }}>
                 {fridgeItems.map((fridgeItem) => (
                     <div key={fridgeItem} style={{ border: '1px solid gray', padding: '10px', margin: '5px', display: 'inline-block' }}>
