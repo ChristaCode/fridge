@@ -37,7 +37,6 @@ const parseLlamaRecipes = (text) => {
     };
 };
 
-
 const fetchMealDetails = async (mealIds, newFridgeItems, kitchenBasics) => {
     try {
         const mealDetailsPromises = mealIds.map(id => 
@@ -138,6 +137,28 @@ const parseMealRecipes = (response) => {
     return mealIds;
 }
 
+app.post('/api/recipes/flax', async (req, res) => {
+    async function query(data) {
+        const response = await fetch(
+            "https://api-inference.huggingface.co/models/flax-community/t5-recipe-generation",
+            {
+                headers: { Authorization: "Bearer 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" },
+                method: "POST",
+                body: JSON.stringify(data),
+            }
+        );
+        const result = await response.json();
+        return result;
+    }
+    
+    const { fridgeItems, kitchenBasics } = req.body;
+    const combined = fridgeItems.join(", ") + kitchenBasics.join(", ")
+
+    query({"inputs": combined}).then((response) => {
+        console.log(JSON.stringify(response));
+    });
+});
+
 app.post('/api/recipes/huggingface', async (req, res) => {
     console.log('Received a request at /api/recipes/huggingface');
     const { fridgeItems, kitchenBasics } = req.body;
@@ -181,7 +202,6 @@ app.post('/api/recipes/huggingface', async (req, res) => {
     }
 });
 
-
 app.post('/api/recipes/mealdb', async (req, res) => {
     // Extracting fridgeItems from the request body
     const { fridgeItems } = req.body;
@@ -193,7 +213,7 @@ app.post('/api/recipes/mealdb', async (req, res) => {
     try {
         // Fetching meal IDs based on ingredients
         const response = await axios.get(`http://www.themealdb.com/api/json/v2/1/filter.php?i=${newFridgeItems.join(",")}`);
-        
+    
         // Assuming parseMealRecipes is a correctly defined function
         const mealIDs = parseMealRecipes(response.data); // Ensure you are passing the correct data to the function
         mealDetails = await fetchMealDetails(mealIDs, newFridgeItems, req.kitchenBasics);
