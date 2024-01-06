@@ -1,7 +1,8 @@
 {
   "name": "fridge",
   "version": "0.1.0",
-  "proxy": "http://localhost:3001",
+  "proxy": "http://www.feastfinder.org",
+  "public": "www.feastfinder.org",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
