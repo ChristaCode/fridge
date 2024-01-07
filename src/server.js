@@ -13,6 +13,15 @@ app.listen(PORT, () => {
 app.use(cors()); // Enable CORS for all origins
 app.use(express.json());
 
+const path = require('path');
+
+app.use(express.static(path.join(__dirname, 'build')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
+
 const hobbitArr = [{
     "title": "",
     "ingredients": [
@@ -140,6 +149,10 @@ const parseMealRecipes = (response) => {
     const mealIds = meals.map(meal => meal.idMeal);
     return mealIds;
 }
+
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+  });
 
 app.post('/api/recipes/flax', async (req, res) => {
     async function query(data) {
