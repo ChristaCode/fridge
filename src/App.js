@@ -119,15 +119,15 @@ const App = () => {
         recipeTitles.push(recipesOne.recipes.title);
 
         const recipesTwo = await callFlax(recipeTitles);
-        if (!recipeTitles.includes(recipesTwo)) setFlaxRecipesTwo(recipesTwo);
+        if (!recipeTitles.includes(recipesOne)) setFlaxRecipesTwo(recipesTwo);
         recipeTitles.push(recipesTwo.recipes.title);
 
         const recipesThree = await callFlax(recipeTitles);
-        if (!recipeTitles.includes(recipesThree)) setFlaxRecipesThree(recipesThree);
+        if (!recipeTitles.includes(recipesTwo)) setFlaxRecipesThree(recipesThree);
         recipeTitles.push(recipesThree.recipes.title);
 
         const recipesFour = await callFlax(recipeTitles);
-        if (!recipeTitles.includes(recipesFour)) setFlaxRecipesFour(recipesFour);
+        if (!recipeTitles.includes(recipesThree)) setFlaxRecipesFour(recipesFour);
         recipeTitles.push(recipesFour.recipes.title);
 
         console.log(recipeTitles);
