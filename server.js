@@ -217,12 +217,16 @@ app.post('/api/recipes/flax', async (req, res) => {
             const response = await fetch(
                 "https://pq9ht0yl27ub2h9t.us-east-1.aws.endpoints.huggingface.cloud",
                 {
-                    headers: { Authorization: `Bearer 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` },
+                    headers: { 
+                        "Authorization": "Bearer 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", 
+                        "Content-Type": "application/json" 
+                    },
                     method: "POST",
                     body: JSON.stringify(data),
                 }
             );
             if (!response.ok) {
+                console.log(response.status)
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             return await response.json();
@@ -232,10 +236,11 @@ app.post('/api/recipes/flax', async (req, res) => {
         }
     }
 
-    const { fridgeItems, kitchenBasics } = req.body;
-    const combined = fridgeItems.join(", ") + ", " + kitchenBasics.join(", ");
+    const { fridgeItemsForFlax, kitchenBasicsForFlax } = req.body;
+    const combined = fridgeItemsForFlax.join(", ") + ", " + kitchenBasicsForFlax.join(", ");
 
     try {
+        console.log({"inputs": combined});
         const response = await query({"inputs": combined});
         if (response) {
             const parsedResponse = parseFlaxRecipe(response[0]?.generated_text)

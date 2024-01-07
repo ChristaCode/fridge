@@ -35,6 +35,7 @@ const App = () => {
 
     const handleAddItem = (item) => {
         setFridgeItems(prevItems => [...prevItems, item]);
+        setFridgeItemsForFlax(prevItems => [...prevItems, item]);
     };
 
     const handleSubmit = () => {
@@ -109,7 +110,6 @@ const App = () => {
 
         // callHFLlama70b();
         // callMealDBMult();
-        await setFridgeItemsForFlax(fridgeItems);
         await setKitchenBasicsForFlax(kitchenBasics);
 
         const recipesOne = await callFlax();
