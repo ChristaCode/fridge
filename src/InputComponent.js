@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 
-const InputComponent = ({ onAddItem, fridgeItems }) => {
+const InputComponent = ({ onAddItem, fridgeItems, kitchenBasics, setKitchenBasics }) => {
     const [item, setItem] = useState('');
     const [isDuplicate, setIsDuplicate] = useState(false);
-    const [kitchenBasics, setKitchenBasics] = useState(["salt", "pepper", "flour", "baking soda", "olive oil", "sugar", "mayonnaise", "ketchup", "garlic", "onion"]);
 
     const handleSubmit = (e) => {
         e.preventDefault();

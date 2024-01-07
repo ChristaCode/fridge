@@ -35,6 +35,10 @@ const App = () => {
         ]
 }];
 
+    const updateKitchenBasics = (val) => {
+         setKitchenBasics(val)
+      }
+
     const handleAddItem = (item) => {
         setFridgeItems(prevItems => [...prevItems, item]);
         setFridgeItemsForFlax(prevItems => [...prevItems, item]);
@@ -154,6 +158,7 @@ const App = () => {
                 onAddItem={handleAddItem} 
                 fridgeItems={fridgeItems} 
                 kitchenBasics={kitchenBasics}
+                setKitchenBasics={updateKitchenBasics}
             />
             <button onClick={handleSubmit}>Get Recipes</button>
             {isSubmitted && <RecipeListComponent llamaRecipes={llamaRecipes} mealDBRecipes={mealDBRecipes} flaxRecipes={flaxRecipes} flaxRecipesTwo={flaxRecipesTwo} flaxRecipesThree={flaxRecipesThree} flaxRecipesFour={flaxRecipesFour} gptRecipes={gptRecipes} isLoading={isLoading} />}
