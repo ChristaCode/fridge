@@ -130,55 +130,76 @@ const fetchMealDetails = async (mealIds, newFridgeItems, kitchenBasics) => {
     }
 };
 
-const parseRecipes = (responseString) => {
-    const recipes = [];
-    const recipeSections = responseString.split(/Recipe \d+:/);
+function parseRecipes(text) {
+    console.log(text);
+    const recipeSections = text.split(/\d+\./).slice(1);
 
-    recipeSections.forEach((section) => {
-        if (section.trim() === '') return;
+    const parseRecipeSection = (section) => {
+        const parts = section.split('\n\n');
+        const title = parts[0] ? parts[0].trim() : '';
+        const ingredientsSection = parts[1] ? parts[1].split('\n- ').slice(1) : [];
+        const instructionsSection = parts.length > 2 ? parts[2].split('\n\nInstructions:\n')[1] : '';
+        const instructions = instructionsSection ? instructionsSection.trim().split('\n').map(step => step.trim()) : [];
 
-        const titleAndRest = section.split('\n\n');
-        const title = titleAndRest[0].trim();
-        const rest = titleAndRest.slice(1).join('\n\n');
+        return {
+            name: title,
+            ingredients: ingredientsSection,
+            instructions: instructions
+        };
+    };
 
-        const ingredientsLabelIndex = rest.indexOf('Ingredients');
-        const instructionsLabelIndex = rest.indexOf('Instructions');
+    return recipeSections.map(parseRecipeSection);
+}
 
-        if (ingredientsLabelIndex === -1 || instructionsLabelIndex === -1) {
-            // If we don't have both ingredients and instructions, skip this section.
-            return;
-        }
+// const parseRecipes = (responseString) => {
+//     const recipes = [];
+//     const recipeSections = responseString.split(/Recipe \d+:/);
 
-        const ingredientsText = rest.substring(
-            ingredientsLabelIndex + 'Ingredients:'.length,
-            instructionsLabelIndex
-        );
+//     recipeSections.forEach((section) => {
+//         if (section.trim() === '') return;
 
-        const instructionsText = rest.substring(
-            instructionsLabelIndex + 'Instructions:'.length
-        );
+//         const titleAndRest = section.split('\n\n');
+//         const title = titleAndRest[0].trim();
+//         const rest = titleAndRest.slice(1).join('\n\n');
 
-        // Split ingredients by newline and filter out any empty lines.
-        const ingredients = ingredientsText
-            .split('\n')
-            .filter((line) => line.trim() !== '')
-            .map((ingredient) => ingredient.trim().replace(/^- /, '')); // Remove bullet points.
+//         const ingredientsLabelIndex = rest.indexOf('Ingredients');
+//         const instructionsLabelIndex = rest.indexOf('Instructions');
 
-        // Split instructions by newline and filter out any empty lines.
-        const instructions = instructionsText
-            .split('\n')
-            .filter((line) => line.trim() !== '')
-            .join('\n'); // Rejoin to keep formatting for display.
+//         if (ingredientsLabelIndex === -1 || instructionsLabelIndex === -1) {
+//             // If we don't have both ingredients and instructions, skip this section.
+//             return;
+//         }
 
-        recipes.push({
-            title,
-            ingredients,
-            instructions,
-        });
-    });
+//         const ingredientsText = rest.substring(
+//             ingredientsLabelIndex + 'Ingredients:'.length,
+//             instructionsLabelIndex
+//         );
 
-    return recipes;
-};
+//         const instructionsText = rest.substring(
+//             instructionsLabelIndex + 'Instructions:'.length
+//         );
+
+//         // Split ingredients by newline and filter out any empty lines.
+//         const ingredients = ingredientsText
+//             .split('\n')
+//             .filter((line) => line.trim() !== '')
+//             .map((ingredient) => ingredient.trim().replace(/^- /, '')); // Remove bullet points.
+
+//         // Split instructions by newline and filter out any empty lines.
+//         const instructions = instructionsText
+//             .split('\n')
+//             .filter((line) => line.trim() !== '')
+//             .join('\n'); // Rejoin to keep formatting for display.
+
+//         recipes.push({
+//             title,
+//             ingredients,
+//             instructions,
+//         });
+//     });
+
+//     return recipes;
+// };
 
 const parseMealRecipes = (response) => {
     const meals = response.data.meals;
@@ -261,6 +282,7 @@ app.post('/api/recipes/huggingface', async (req, res) => {
             res.json({ recipes: [] });
         }
     } catch (error) {
+        res.status(500).send('Error processing request');
         // Error already logged and response sent in the query function
     }
 });
@@ -286,6 +308,7 @@ app.post('/api/recipes/mealdb', async (req, res) => {
 
         res.json({ recipes: meals });
     } catch (error) {
+        res.status(500).send('Error processing request');
         console.error('Error fetching meal details:', error);
     }
 });
@@ -320,6 +343,7 @@ app.post('/api/recipes/openai', async (req, res) => {
         console.log(response.data.choices[0].message.content)
         res.json({ recipes: recipesData });
     } catch (error) {
+        res.status(500).send('Error processing request');
         console.error('Error calling GPT API:', error);
     }
 });
