@@ -7,7 +7,11 @@ import axios from 'axios';
 
 const App = () => {
     const [fridgeItems, setFridgeItems] = useState([]);
+    const [fridgeItemsForFlax, setFridgeItemsForFlax] = useState([]);
+
     const [kitchenBasics, setKitchenBasics] = useState(["salt", "pepper", "flour", "baking soda", "olive oil", "sugar", "mayonnaise", "ketchup", "garlic", "onion"]);
+    const [kitchenBasicsForFlax, setKitchenBasicsForFlax] = useState(["salt", "pepper", "flour", "baking soda", "olive oil", "sugar", "mayonnaise", "ketchup", "garlic", "onion"]);
+
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [llamaRecipes, setLlamaRecipes] = useState(null);
     const [mealDBRecipes, setMealDBRecipes] = useState([]);
@@ -80,16 +84,16 @@ const App = () => {
 
         const callFlax = async () => {
             try {
-                const response = await axios.post('/api/recipes/flax', { fridgeItems, kitchenBasics });
-                if (kitchenBasics.length > 1) {
-                    shuffleArray(kitchenBasics)
-                    kitchenBasics.pop();
-                    setKitchenBasics(kitchenBasics)
+                const response = await axios.post('/api/recipes/flax', { fridgeItemsForFlax, kitchenBasicsForFlax });
+                if (kitchenBasicsForFlax.length > 1) {
+                    shuffleArray(kitchenBasicsForFlax)
+                    kitchenBasicsForFlax.pop();
+                    setKitchenBasicsForFlax(kitchenBasicsForFlax)
                 }
-                if (fridgeItems.length > 1) {
-                    shuffleArray(fridgeItems)
-                    fridgeItems.pop();
-                    setFridgeItems(fridgeItems)
+                if (fridgeItemsForFlax.length > 1) {
+                    shuffleArray(fridgeItemsForFlax)
+                    fridgeItemsForFlax.pop();
+                    setFridgeItemsForFlax(fridgeItemsForFlax)
                 }
 
                 if (response) {
@@ -105,6 +109,9 @@ const App = () => {
 
         // callHFLlama70b();
         // callMealDBMult();
+        await setFridgeItemsForFlax(fridgeItems);
+        await setKitchenBasicsForFlax(kitchenBasics);
+
         const recipesOne = await callFlax();
         setFlaxRecipes(recipesOne); // Assuming setFlaxRecipes can handle the data returned by callFlax
     

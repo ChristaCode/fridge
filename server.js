@@ -215,7 +215,7 @@ app.post('/api/recipes/flax', async (req, res) => {
     async function query(data) {
         try {
             const response = await fetch(
-                "https://api-inference.huggingface.co/models/flax-community/t5-recipe-generation",
+                "https://pq9ht0yl27ub2h9t.us-east-1.aws.endpoints.huggingface.cloud",
                 {
                     headers: { Authorization: `Bearer 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` },
                     method: "POST",
