@@ -1,15 +1,9 @@
 import React from 'react';
 import './RecipeListComponent.css';
 
-const RecipeListComponent = ({ llamaRecipes, mealDBRecipes, flaxRecipes, gptRecipes, isLoading, doneAllLoading }) => {    
+const RecipeListComponent = ({ llamaRecipes, mealDBRecipes, flaxRecipes, flaxRecipesTwo, flaxRecipesThree, flaxRecipesFour, gptRecipes, isLoading }) => {    
     return (
         <div className="recipe-list">
-            {isLoading ? (
-                <div className="loading-container">
-                    <div className="loading-spinner"></div>
-                </div>
-            ) : (
-                <>
                     {mealDBRecipes && mealDBRecipes.map((recipe, index) => (
                         <div key={index} className="recipe-card">
                             <h2 className="recipe-title">{recipe.title}</h2>
@@ -41,6 +35,57 @@ const RecipeListComponent = ({ llamaRecipes, mealDBRecipes, flaxRecipes, gptReci
                             <h3>Instructions:</h3>
                             <ol>
                                 {flaxRecipes.recipes.instructions.map((instruction, i) => (
+                                    <li key={i}>{instruction}</li>
+                                ))}
+                            </ol>
+                        </div>
+                    )}
+                    {flaxRecipesTwo && flaxRecipesTwo.recipes && (
+                        <div className="recipe-card">
+                            <h2 className="recipe-title">{flaxRecipesTwo.recipes.title}</h2>
+                            <h3>Ingredients:</h3>
+                            <ul>
+                                {Object.entries(flaxRecipesTwo.recipes.ingredients).map(([ingredient, quantity], i) => (
+                                    <li key={i}>{`${ingredient}: ${quantity}`}</li>
+                                ))}
+                            </ul>
+                            <h3>Instructions:</h3>
+                            <ol>
+                                {flaxRecipesTwo.recipes.instructions.map((instruction, i) => (
+                                    <li key={i}>{instruction}</li>
+                                ))}
+                            </ol>
+                        </div>
+                    )}
+                    {flaxRecipesThree && flaxRecipesThree.recipes && (
+                        <div className="recipe-card">
+                            <h2 className="recipe-title">{flaxRecipesThree.recipes.title}</h2>
+                            <h3>Ingredients:</h3>
+                            <ul>
+                                {Object.entries(flaxRecipesThree.recipes.ingredients).map(([ingredient, quantity], i) => (
+                                    <li key={i}>{`${ingredient}: ${quantity}`}</li>
+                                ))}
+                            </ul>
+                            <h3>Instructions:</h3>
+                            <ol>
+                                {flaxRecipesThree.recipes.instructions.map((instruction, i) => (
+                                    <li key={i}>{instruction}</li>
+                                ))}
+                            </ol>
+                        </div>
+                    )}
+                    {flaxRecipesFour && flaxRecipesFour.recipes && (
+                        <div className="recipe-card">
+                            <h2 className="recipe-title">{flaxRecipesFour.recipes.title}</h2>
+                            <h3>Ingredients:</h3>
+                            <ul>
+                                {Object.entries(flaxRecipesFour.recipes.ingredients).map(([ingredient, quantity], i) => (
+                                    <li key={i}>{`${ingredient}: ${quantity}`}</li>
+                                ))}
+                            </ul>
+                            <h3>Instructions:</h3>
+                            <ol>
+                                {flaxRecipesFour.recipes.instructions.map((instruction, i) => (
                                     <li key={i}>{instruction}</li>
                                 ))}
                             </ol>
@@ -80,14 +125,11 @@ const RecipeListComponent = ({ llamaRecipes, mealDBRecipes, flaxRecipes, gptReci
                             </ol>
                         </div>
                     ))}
-                    {console.log(doneAllLoading)}
-                    {doneAllLoading !== 3 && (
+                    {isLoading !== false && (
                         <div className="loading-container">
                             <div className="loading-spinner"></div>
                         </div>
                     )}
-                </>
-            )}
         </div>
     );
 };
