@@ -107,7 +107,7 @@ const App = () => {
         // callHFLlama70b();
         // callMealDBMult();
         callFlax();
-        callGPT();
+        // callGPT();
     }
 
     return (

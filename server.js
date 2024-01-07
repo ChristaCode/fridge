@@ -131,23 +131,27 @@ const fetchMealDetails = async (mealIds, newFridgeItems, kitchenBasics) => {
 };
 
 function parseRecipes(text) {
-    console.log(text);
-    const recipeSections = text.split(/\d+\./).slice(1);
+    // Split the text into sections for each recipe
+    const recipeSections = text.split(/\n\d+\./).slice(1);
 
+    // Define a function to parse each recipe section
     const parseRecipeSection = (section) => {
-        const parts = section.split('\n\n');
-        const title = parts[0] ? parts[0].trim() : '';
-        const ingredientsSection = parts[1] ? parts[1].split('\n- ').slice(1) : [];
-        const instructionsSection = parts.length > 2 ? parts[2].split('\n\nInstructions:\n')[1] : '';
-        const instructions = instructionsSection ? instructionsSection.trim().split('\n').map(step => step.trim()) : [];
+        const parts = section.split("\n\nInstructions:\n");
+        const titleAndIngredients = parts[0].trim();
+        const instructions = parts[1] ? parts[1].trim() : '';
+
+        const titleLines = titleAndIngredients.split('\n');
+        const title = titleLines[0].trim();
+        const ingredients = titleLines.slice(1).map(ingredient => ingredient.trim().substring(2));
 
         return {
             name: title,
-            ingredients: ingredientsSection,
-            instructions: instructions
+            ingredients: ingredients,
+            instructions: instructions.split('\n').map(step => step.trim())
         };
     };
 
+    // Map each section to a recipe object
     return recipeSections.map(parseRecipeSection);
 }
 
