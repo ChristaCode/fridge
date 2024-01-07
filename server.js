@@ -21,13 +21,28 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
   });
 
-const hobbitArr = [{
-    "title": "",
+  const hobbitArr = [{
+    "title": "Baked Garlic Parmesan Chicken",
     "ingredients": [
-        ""
+        "4 chicken thighs",
+        "1 tsp salt"
     ],
-    "instructions": ""
-}];
+    "instructions": [
+        "1. Preheat the oven to 375°F.",
+        "2. Coat each chicken thigh in the flour mixture and place on a greased baking sheet."
+    ]
+    },
+    {
+        "title": "Baked Garlic Parmesan Chicken",
+        "ingredients": [
+            "4 chicken thighs",
+            "1 tsp salt"
+        ],
+        "instructions": [
+            "1. Preheat the oven to 375°F.",
+            "2. Coat each chicken thigh in the flour mixture and place on a greased baking sheet."
+        ]
+    }];
 
 function replaceSpacesWithUnderscores(strings) {
     return strings.map(string => string.replace(/\s+/g, '_'));
@@ -158,29 +173,43 @@ const fetchMealDetails = async (mealIds, newFridgeItems, kitchenBasics) => {
 };
 
 function parseRecipes(text) {
-    // Split the text into sections for each recipe
-    const recipeSections = text.split(/\n\d+\./).slice(1);
+    const recipes = [];
+    let currentRecipe = { title: '', ingredients: [], instructions: [] };
+    let isCollectingIngredients = true;
 
-    // Define a function to parse each recipe section
-    const parseRecipeSection = (section) => {
-        const parts = section.split("\n\nInstructions:\n");
-        const titleAndIngredients = parts[0].trim();
-        const instructions = parts[1] ? parts[1].trim() : '';
+    text.split('\n').forEach(line => {
+        if (line.match(/^\d+\.\s+.+/)) {
+            // New recipe starts
+            if (currentRecipe.title) {
+                recipes.push(currentRecipe);
+            }
+            currentRecipe = { title: line.trim(), ingredients: [], instructions: [] };
+            isCollectingIngredients = true;
+        } else if (line.trim() && currentRecipe) {
+            if (isCollectingIngredients) {
+                if (line.match(/^\d+\./)) {
+                    // Start of instructions
+                    isCollectingIngredients = false;
+                    currentRecipe.instructions.push(line.trim());
+                } else {
+                    // Ingredient line
+                    currentRecipe.ingredients.push(line.trim());
+                }
+            } else {
+                // Continuation of instructions
+                currentRecipe.instructions.push(line.trim());
+            }
+        }
+    });
 
-        const titleLines = titleAndIngredients.split('\n');
-        const title = titleLines[0].trim();
-        const ingredients = titleLines.slice(1).map(ingredient => ingredient.trim().substring(2));
-
-        return {
-            name: title,
-            ingredients: ingredients,
-            instructions: instructions.split('\n').map(step => step.trim())
-        };
-    };
-
-    // Map each section to a recipe object
-    return recipeSections.map(parseRecipeSection);
+    // Add the last recipe if it exists
+    if (currentRecipe.title) {
+        recipes.push(currentRecipe);
+    }
+    console.log(recipes);
+    return recipes;
 }
+
 
 // const parseRecipes = (responseString) => {
 //     const recipes = [];
@@ -351,7 +380,7 @@ app.post('/api/recipes/mealdb', async (req, res) => {
 
 app.post('/api/recipes/openai', async (req, res) => {
     // Extracting fridgeItems and kitchenBasics from the request body
-    const { fridgeItems, kitchenBasics } = req.body;
+    const { fridgeItems, kitchenBasics, recipeTitles } = req.body;
 
     try {
         const response = await axios.post(
@@ -361,7 +390,7 @@ app.post('/api/recipes/openai', async (req, res) => {
                 messages: [
                     {
                         role: 'user',
-                        content: `Please generate recipes given these ingredients: ${fridgeItems.join(", ")} ${kitchenBasics}. Return each recipe in the format of ${hobbitArr}`,
+                        content: `Please generate recipes given these ingredients: ${fridgeItems.join(", ")} ${kitchenBasics.join(", ")}. Return each recipe in the format of ${hobbitArr}}.`,
                     }
                 ],
             },
@@ -376,7 +405,7 @@ app.post('/api/recipes/openai', async (req, res) => {
         // Assuming parseRecipes is a correctly defined function
         const recipesData = parseRecipes(response.data.choices[0].message.content.trim());
         console.log('gpt response');
-        console.log(response.data.choices[0].message.content)
+        console.log(recipesData)
         res.json({ recipes: recipesData });
     } catch (error) {
         res.status(500).send('Error processing request');

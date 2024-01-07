@@ -108,7 +108,9 @@ const RecipeListComponent = ({ llamaRecipes, mealDBRecipes, flaxRecipes, flaxRec
                             </ol>
                         </div>
                     )}
-                    {gptRecipes.map((recipe, index) => (
+                    {console.log('gptRecipes')}
+                    {console.log(gptRecipes)}
+                    {gptRecipes && gptRecipes.map((recipe, index) => (
                         <div key={index} className="recipe-card">
                             <h2 className="recipe-title">{recipe.title}</h2>
                             <h3>Ingredients:</h3>
@@ -117,12 +119,13 @@ const RecipeListComponent = ({ llamaRecipes, mealDBRecipes, flaxRecipes, flaxRec
                                     <li key={i}>{ingredient}</li>
                                 ))}
                             </ul>
+                             {/*
                             <h3>Instructions:</h3>
                             <ol>
                                 {recipe.instructions.split('\n').map((instruction, i) => (
                                     <li key={i}>{instruction}</li>
                                 ))}
-                            </ol>
+                            </ol> */}
                         </div>
                     ))}
                     {isLoading === true && (

@@ -26,11 +26,13 @@ const App = () => {
     const [apiCounter, setApiCounter] = useState(false);
 
     const hobbitArr = [{
-        "title": "looks like meats back on the menu, boys",
+        "title": "Looks like meats back on the menu, boys",
         "ingredients": [
             "2 hobbits"
         ],
-        "instructions": "Boil em\nMash um\nStick um in a stew"
+        "instructions": [
+            "1. Boil em\n 2. Mash um\n 3. Stick um in a stew"
+        ]
 }];
 
     const handleAddItem = (item) => {
@@ -75,18 +77,21 @@ const App = () => {
         const callGPT = async () => {
             setIsLoading(true);
             try {
-                const response = await axios.post('/api/recipes/openai', { fridgeItems, kitchenBasics });
+                console.time('API callGPT Duration'); // Start the timer with a label
+                const response = await axios.post('/api/recipes/openai', { fridgeItems, kitchenBasics, recipeTitles});
                 setGPTRecipes(response.data.recipes);
             } catch (error) {
                 console.log(error.message);
                 setIsLoading(false);
             } finally {
                 setIsLoading(false);
+                console.timeEnd('API callGPT Duration'); // Stop the timer and log the duration
             }
         };
 
         const callFlax = async () => {
             try {
+                console.time('API callFlax Duration'); // Start the timer with a label
                 const response = await axios.post('/api/recipes/flax', { fridgeItemsForFlax, kitchenBasicsForFlax });
                 if (kitchenBasicsForFlax.length > 1) {
                     shuffleArray(kitchenBasicsForFlax)
@@ -105,14 +110,18 @@ const App = () => {
             } catch (error) {
                 console.log(error.message);
                 setIsLoading(false);
+            } finally {
+                console.timeEnd('API callFlax Duration'); // Stop the timer and log the duration
             }
         }
 
         // callHFLlama70b();
         // callMealDBMult();
-        await setKitchenBasicsForFlax(kitchenBasics);
-
         const recipeTitles = [];
+
+        callGPT(recipeTitles);
+
+        setKitchenBasicsForFlax(kitchenBasics);
 
         const recipesOne = await callFlax(recipeTitles);
         setFlaxRecipes(recipesOne); // Assuming setFlaxRecipes can handle the data returned by callFlax
@@ -129,11 +138,6 @@ const App = () => {
         const recipesFour = await callFlax(recipeTitles);
         if (!recipeTitles.includes(recipesThree)) setFlaxRecipesFour(recipesFour);
         recipeTitles.push(recipesFour.recipes.title);
-
-        console.log(recipeTitles);
-
-        setIsLoading(false);
-        // callGPT();
     }
 
     const shuffleArray = (array) => {
