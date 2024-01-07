@@ -119,7 +119,7 @@ const App = () => {
         // callMealDBMult();
         const recipeTitles = [];
 
-        callGPT(recipeTitles);
+        callGPT();
 
         setKitchenBasicsForFlax(kitchenBasics);
 

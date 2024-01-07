@@ -4,6 +4,12 @@ const axios = require('axios');
 const cors = require('cors');
 
 const app = express();
+const NodeCache = require('node-cache');
+
+const secondsInAMonth = 30 * 24 * 60 * 60;
+const twoMonthsInSeconds = 2 * secondsInAMonth;
+const myCache = new NodeCache({ stdTTL: twoMonthsInSeconds, checkperiod: 120 });
+
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
@@ -294,12 +300,19 @@ app.post('/api/recipes/flax', async (req, res) => {
 
     const { fridgeItemsForFlax, kitchenBasicsForFlax } = req.body;
     const combined = fridgeItemsForFlax.join(", ") + ", " + kitchenBasicsForFlax.join(", ");
+    const cacheKey = `flax-recipes-${JSON.stringify({ fridgeItemsForFlax, kitchenBasicsForFlax })}`;
+
+    const cachedData = myCache.get(cacheKey);
+    if (cachedData) {
+        return res.json({ recipes: cachedData });
+    }
 
     try {
         const response = await query({"inputs": combined});
         if (response) {
             const parsedResponse = parseFlaxRecipe(response[0]?.generated_text)
             console.log(response)
+            myCache.set(cacheKey, parsedResponse);
             return res.json({ recipes: parsedResponse });
         } else {
             return res.json({ recipes: [] });
@@ -355,9 +368,14 @@ app.post('/api/recipes/huggingface', async (req, res) => {
 app.post('/api/recipes/mealdb', async (req, res) => {
     // Extracting fridgeItems from the request body
     const { fridgeItems } = req.body;
-
-    // Assuming replaceSpacesWithUnderscores is a correctly defined function
     const newFridgeItems = replaceSpacesWithUnderscores(fridgeItems);
+    const cacheKey = newFridgeItems.join(",");
+
+    const cachedData = myCache.get(cacheKey);
+    if (cachedData) {
+        return res.json({ recipes: cachedData });
+    }
+
     let mealDetails = [];
 
     try {
@@ -370,6 +388,7 @@ app.post('/api/recipes/mealdb', async (req, res) => {
 
         // Filter out meals marked for deletion
         const meals = mealDetails.filter(item => item.title !== "delete");
+        myCache.set(cacheKey, meals);
 
         res.json({ recipes: meals });
     } catch (error) {
@@ -380,7 +399,13 @@ app.post('/api/recipes/mealdb', async (req, res) => {
 
 app.post('/api/recipes/openai', async (req, res) => {
     // Extracting fridgeItems and kitchenBasics from the request body
-    const { fridgeItems, kitchenBasics, recipeTitles } = req.body;
+    const { fridgeItems, kitchenBasics } = req.body;
+    const cacheKey = `openai-recipes-${JSON.stringify({ fridgeItems, kitchenBasics })}`;
+
+    const cachedData = myCache.get(cacheKey);
+    if (cachedData) {
+        return res.json({ recipes: cachedData });
+    }
 
     try {
         const response = await axios.post(
@@ -404,6 +429,8 @@ app.post('/api/recipes/openai', async (req, res) => {
 
         // Assuming parseRecipes is a correctly defined function
         const recipesData = parseRecipes(response.data.choices[0].message.content.trim());
+        myCache.set(cacheKey, recipesData);
+
         console.log('gpt response');
         console.log(recipesData)
         res.json({ recipes: recipesData });
