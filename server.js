@@ -328,18 +328,27 @@ app.post('/api/recipes/huggingface', async (req, res) => {
     const { fridgeItems, kitchenBasics } = req.body;
 
     async function query(data) {
+        const requestData = {
+            ...data,
+            parameters: {
+                max_new_tokens: 1000
+            }
+        };
+        const body = JSON.stringify(requestData);
         try {
-            const response = await axios.post(
+            const response = await fetch(
                 "https://api-inference.huggingface.co/models/meta-llama/Llama-2-70b-chat-hf",
-                data,
                 {
                     headers: { 
-                        Authorization: "Bearer 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",
+                        "Authorization": "Bearer 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", 
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    method: "POST",
+                    body: body,
                 }
             );
-            return response.data;
+            const result = await response.json();
+            return result;
         } catch (error) {
             console.error('Error during Hugging Face API call:', error);
             res.status(500).send('Error processing request');
@@ -353,7 +362,10 @@ app.post('/api/recipes/huggingface', async (req, res) => {
         };
 
         const response = await query(inputData);
+        console.log('free 70B', response);
+        console.log(response);
         if (response) {
+            console.log('llama respones before parsing');
             const llamaRecipes = parseLlamaRecipes(response[0].generated_text);
             res.json({ recipes: llamaRecipes });
         } else {

@@ -63,6 +63,7 @@ const App = () => {
         }
 
         const callHFLlama70b = async () => {
+            console.log('bruh');
             try {
                 const response = await axios.post('/api/recipes/huggingface', { fridgeItems, kitchenBasics });
                 setLlamaRecipes(response.data.recipes);
@@ -120,7 +121,7 @@ const App = () => {
             }
         }
 
-        // callHFLlama70b();
+        callHFLlama70b();
         // callMealDBMult();
         const recipeTitles = [];
 
