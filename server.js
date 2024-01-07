@@ -50,14 +50,31 @@ const parseLlamaRecipes = (text) => {
 };
 
 function capitalizeWords(string) {
-    return string.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    if (typeof string !== 'string' || !string) {
+        console.error('Invalid input for capitalizeWords:', string);
+        return ''; // Return an empty string or handle this case as appropriate
+    }
+
+    return string.split(' ').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
 }
 
+
 function parseFlaxRecipe(recipeString) {
+    if (!recipeString) {
+        console.error('Invalid recipe string');
+        return null; // or handle this case as appropriate
+    }
+
     let recipe = {};
 
     // Splitting the string into title, ingredients, and directions parts
     const parts = recipeString.split(/ ingredients: | directions: /);
+    if (parts.length < 3) {
+        console.error('Recipe string does not have the expected format');
+        return null; // or handle this case as appropriate
+    }
 
     // Extracting and capitalizing the title
     recipe.title = capitalizeWords(parts[0].split('title: ')[1].trim());
