@@ -150,10 +150,6 @@ const parseMealRecipes = (response) => {
     return mealIds;
 }
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-  });
-
 app.post('/api/recipes/flax', async (req, res) => {
     async function query(data) {
         const response = await fetch(
