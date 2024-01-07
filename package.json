@@ -15,8 +15,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "webpack serve --open",
-    "server": "node server.js",
+    "start": "node server.js",
+    "heroku-postbuild": "npm run build",
     "build": "webpack --mode production",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

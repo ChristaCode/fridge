@@ -4,7 +4,12 @@ const axios = require('axios');
 const cors = require('cors');
 
 const app = express();
-const port = 3001;
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
 
 app.use(cors()); // Enable CORS for all origins
 app.use(express.json());
@@ -257,8 +262,4 @@ app.post('/api/recipes/openai', async (req, res) => {
     } catch (error) {
         console.error('Error calling GPT API:', error);
     }
-});
-
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
 });
