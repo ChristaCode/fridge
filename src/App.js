@@ -11,8 +11,11 @@ const App = () => {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [llamaRecipes, setLlamaRecipes] = useState(null);
     const [mealDBRecipes, setMealDBRecipes] = useState([]);
-    const [recipes, setRecipes] = useState([]);
+    const [flaxRecipes, setFlaxRecipes] = useState([]);
+    const [gptRecipes, setGPTRecipes] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [doneAllLoading, setDoneAllLoading] = useState(0);
+    const [apiCounter, setApiCounter] = useState(false);
 
     const hobbitArr = [{
         "title": "looks like meats back on the menu, boys",
@@ -36,7 +39,9 @@ const App = () => {
         if (fridgeItems.length === 0) return;
 
         if (fridgeItems.includes("human meat")){
-            setRecipes(hobbitArr);
+            setGPTRecipes(hobbitArr);
+            setIsLoading(false);
+            setDoneAllLoading(4);
             return;
         }
 
@@ -44,27 +49,39 @@ const App = () => {
             try {
                 const response = await axios.post('/api/recipes/huggingface', { fridgeItems, kitchenBasics });
                 setLlamaRecipes(response.data.recipes);
+                setIsLoading(false);
+                const temp = doneAllLoading + 1;
+                setDoneAllLoading(temp)
             } catch (error) {
                 console.log(error.response ? error.response.data : 'Failed to fetch from Llama API');
+                setIsLoading(false);
+                const temp = doneAllLoading + 1;
+                setDoneAllLoading(temp)
             }
         };
         
         const callMealDBMult = async () => {
             const response = await axios.post('/api/recipes/mealdb', { fridgeItems, kitchenBasics });
             setMealDBRecipes(response.data.recipes);
+            setIsLoading(false);
+            const temp = doneAllLoading + 1;
+            setDoneAllLoading(temp)
         };
     
         const callGPT = async () => {
             setIsLoading(true);
             try {
                 const response = await axios.post('/api/recipes/openai', { fridgeItems, kitchenBasics });
-                setRecipes(response.data.recipes);
-                setIsLoading(false);
+                setGPTRecipes(response.data.recipes);
             } catch (error) {
                 console.log(error.message);
                 setIsLoading(false);
+                const temp = doneAllLoading + 1;
+                setDoneAllLoading(temp)
             } finally {
                 setIsLoading(false);
+                const temp = doneAllLoading + 1;
+                setDoneAllLoading(3)
             }
         };
 
@@ -73,20 +90,24 @@ const App = () => {
             try {
                 const response = await axios.post('/api/recipes/flax', { fridgeItems, kitchenBasics });
                 if (response) {
-                    setRecipes(response.data);
+                    setFlaxRecipes(response.data);
                 }
             } catch (error) {
                 console.log(error.message);
                 setIsLoading(false);
+                const temp = doneAllLoading + 1;
+                setDoneAllLoading(temp)
             } finally {
                 setIsLoading(false);
+                const temp = doneAllLoading + 1;
+                setDoneAllLoading(temp)
             }
         }
 
-        // callHFLlama70b();
+        callHFLlama70b();
         // callMealDBMult();
         callFlax();
-        // callGPT();
+        callGPT();
     }
 
     return (
@@ -98,7 +119,7 @@ const App = () => {
                 kitchenBasics={kitchenBasics}
             />
             <button onClick={handleSubmit}>Get Recipes</button>
-            {isSubmitted && <RecipeListComponent llamaRecipes={llamaRecipes} mealDBRecipes={mealDBRecipes} recipes={recipes} isLoading={isLoading} />}
+            {isSubmitted && <RecipeListComponent llamaRecipes={llamaRecipes} mealDBRecipes={mealDBRecipes} flaxRecipes={flaxRecipes} gptRecipes={gptRecipes} isLoading={isLoading} doneAllLoading={doneAllLoading} />}
         </div>
     );
 }

@@ -111,7 +111,7 @@ const fetchMealDetails = async (mealIds, newFridgeItems, kitchenBasics) => {
                 return !combinedItems.some(item => lowerIngredient.includes(item));
             });
 
-            if (elementsNotInArray.length > 5) {
+            if (elementsNotInArray.length > 1) {
                 return {
                     title: "delete"
                 };
@@ -275,7 +275,7 @@ app.post('/api/recipes/mealdb', async (req, res) => {
 
     try {
         // Fetching meal IDs based on ingredients
-        const response = await axios.get(`http://www.themealdb.com/api/json/v2/1/filter.php?i=${newFridgeItems.join(",")}`);
+        const response = await axios.get(`http://www.themealdb.com/api/json/v2/1/filter.php?i=${newFridgeItems[0]}`);
     
         // Assuming parseMealRecipes is a correctly defined function
         const mealIDs = parseMealRecipes(response.data); // Ensure you are passing the correct data to the function
@@ -302,20 +302,22 @@ app.post('/api/recipes/openai', async (req, res) => {
                 messages: [
                     {
                         role: 'user',
-                        content: `Please generate recipes given these ingredients: ${fridgeItems.join(", ")} ${kitchenBasics}`,
+                        content: `Please generate recipes given these ingredients: ${fridgeItems.join(", ")} ${kitchenBasics}. Return each recipe in the format of ${hobbitArr}`,
                     }
                 ],
             },
             {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,  // Using environment variable for API key
+                    Authorization: `Bearer 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`,  // Using environment variable for API key
                 },
             }
         );
 
         // Assuming parseRecipes is a correctly defined function
         const recipesData = parseRecipes(response.data.choices[0].message.content.trim());
+        console.log('gpt response');
+        console.log(response.data.choices[0].message.content)
         res.json({ recipes: recipesData });
     } catch (error) {
         console.error('Error calling GPT API:', error);
