@@ -40,7 +40,10 @@ const RecipeListComponent = ({ llamaRecipes, mealDBRecipes, recipes, isLoading }
                     </ol>
                 </div>
             ))}
-            {isLoading === false &&
+            {isLoading ?
+                (<div className="loading-container">
+                    <div className="loading-spinner"></div>
+                </div>) : 
                 <div className="recipe-card">
                     <h2 className="recipe-title">{recipes.recipes.title}</h2>
                     <h3>Ingredients:</h3>
