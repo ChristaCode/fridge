@@ -10,7 +10,6 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-
 app.use(cors()); // Enable CORS for all origins
 app.use(express.json());
 
