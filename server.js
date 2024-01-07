@@ -215,7 +215,7 @@ app.post('/api/recipes/flax', async (req, res) => {
     async function query(data) {
         try {
             const response = await fetch(
-                "https://pq9ht0yl27ub2h9t.us-east-1.aws.endpoints.huggingface.cloud",
+                "https://api-inference.huggingface.co/models/flax-community/t5-recipe-generation",
                 {
                     headers: { 
                         "Authorization": "Bearer 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", 
@@ -244,6 +244,7 @@ app.post('/api/recipes/flax', async (req, res) => {
         const response = await query({"inputs": combined});
         if (response) {
             const parsedResponse = parseFlaxRecipe(response[0]?.generated_text)
+            console.log(response)
             return res.json({ recipes: parsedResponse });
         } else {
             return res.json({ recipes: [] });
