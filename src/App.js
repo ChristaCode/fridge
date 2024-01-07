@@ -37,6 +37,7 @@ const App = () => {
 
     const updateKitchenBasics = (val) => {
          setKitchenBasics(val)
+         setKitchenBasicsForFlax(val)
       }
 
     const handleAddItem = (item) => {
