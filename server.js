@@ -49,14 +49,18 @@ const parseLlamaRecipes = (text) => {
     };
 };
 
+function capitalizeWords(string) {
+    return string.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+}
+
 function parseFlaxRecipe(recipeString) {
     let recipe = {};
 
     // Splitting the string into title, ingredients, and directions parts
     const parts = recipeString.split(/ ingredients: | directions: /);
 
-    // Extracting the title
-    recipe.title = parts[0].split('title: ')[1].trim();
+    // Extracting and capitalizing the title
+    recipe.title = capitalizeWords(parts[0].split('title: ')[1].trim());
 
     // Processing ingredients
     const ingredientsList = parts[1].split(' ');
@@ -71,20 +75,26 @@ function parseFlaxRecipe(recipeString) {
             ingredient += ' ' + ingredientsList[i + 2];
         }
 
+        // Capitalize first word of ingredient
+        ingredient = capitalizeWords(ingredient);
+
         ingredients[ingredient] = quantity;
     }
     recipe.ingredients = ingredients;
 
-    // Processing directions
-    recipe.directions = parts[2].split('. ').map(direction => direction.trim() + '.');
-    recipe.instructions = parts[2].split('. ').map(instruction => instruction.trim() + '.');
+    // Processing and capitalizing directions
+    recipe.directions = parts[2].split('. ').map(direction => capitalizeWords(direction.trim()) + '.');
+
+    // Processing and capitalizing instructions
+    recipe.instructions = parts[2].split('. ').map(instruction => capitalizeWords(instruction.trim()) + '.');
 
     return {
         title: recipe.title,
-        ingredients: recipe.directions,
+        ingredients: recipe.ingredients,
         instructions: recipe.instructions,
     };
 }
+
 
 const fetchMealDetails = async (mealIds, newFridgeItems, kitchenBasics) => {
     try {
@@ -240,7 +250,6 @@ app.post('/api/recipes/flax', async (req, res) => {
     const combined = fridgeItemsForFlax.join(", ") + ", " + kitchenBasicsForFlax.join(", ");
 
     try {
-        console.log({"inputs": combined});
         const response = await query({"inputs": combined});
         if (response) {
             const parsedResponse = parseFlaxRecipe(response[0]?.generated_text)

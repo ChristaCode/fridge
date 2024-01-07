@@ -125,7 +125,7 @@ const RecipeListComponent = ({ llamaRecipes, mealDBRecipes, flaxRecipes, flaxRec
                             </ol>
                         </div>
                     ))}
-                    {isLoading !== false && (
+                    {isLoading === true && (
                         <div className="loading-container">
                             <div className="loading-spinner"></div>
                         </div>

@@ -45,6 +45,8 @@ const App = () => {
 
 
     const callAPI = async () => {
+        setIsLoading(true);
+
         if (fridgeItems.length === 0) return;
 
         if (fridgeItems.includes("human meat")){
@@ -103,8 +105,6 @@ const App = () => {
             } catch (error) {
                 console.log(error.message);
                 setIsLoading(false);
-            } finally {
-                setIsLoading(false);
             }
         }
 
@@ -112,17 +112,25 @@ const App = () => {
         // callMealDBMult();
         await setKitchenBasicsForFlax(kitchenBasics);
 
-        const recipesOne = await callFlax();
+        const recipeTitles = [];
+
+        const recipesOne = await callFlax(recipeTitles);
         setFlaxRecipes(recipesOne); // Assuming setFlaxRecipes can handle the data returned by callFlax
-    
-        const recipesTwo = await callFlax();
-        setFlaxRecipesTwo(recipesTwo);
-    
-        const recipesThree = await callFlax();
-        setFlaxRecipesThree(recipesThree);
-    
-        const recipesFour = await callFlax();
-        setFlaxRecipesFour(recipesFour);
+        recipeTitles.push(recipesOne.recipes.title);
+
+        const recipesTwo = await callFlax(recipeTitles);
+        if (!recipeTitles.includes(recipesTwo)) setFlaxRecipesTwo(recipesTwo);
+        recipeTitles.push(recipesTwo.recipes.title);
+
+        const recipesThree = await callFlax(recipeTitles);
+        if (!recipeTitles.includes(recipesThree)) setFlaxRecipesThree(recipesThree);
+        recipeTitles.push(recipesThree.recipes.title);
+
+        const recipesFour = await callFlax(recipeTitles);
+        if (!recipeTitles.includes(recipesFour)) setFlaxRecipesFour(recipesFour);
+        recipeTitles.push(recipesFour.recipes.title);
+
+        console.log(recipeTitles);
 
         setIsLoading(false);
         // callGPT();
