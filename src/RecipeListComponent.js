@@ -40,7 +40,24 @@ const RecipeListComponent = ({ llamaRecipes, mealDBRecipes, recipes, isLoading }
                     </ol>
                 </div>
             ))}
-            {isLoading ?
+            {isLoading === false &&
+                <div className="recipe-card">
+                    <h2 className="recipe-title">{recipes.recipes.title}</h2>
+                    <h3>Ingredients:</h3>
+                    <ul>
+                        {Object.entries(recipes.recipes.ingredients).map(([ingredient, quantity], i) => (
+                            <li key={i}>{`${ingredient}: ${quantity}`}</li>
+                        ))}
+                    </ul>
+                    <h3>Instructions:</h3>
+                    <ol>
+                        {recipes.recipes.instructions.map((instruction, i) => (
+                            <li key={i}>{instruction}</li>
+                        ))}
+                    </ol>
+                </div>
+            }
+            {/* {isLoading ?
                 (<div className="loading-container">
                     <div className="loading-spinner"></div>
                 </div>) : recipes.map((recipe, index) => (
@@ -59,7 +76,7 @@ const RecipeListComponent = ({ llamaRecipes, mealDBRecipes, recipes, isLoading }
                         ))}
                     </ol>
                 </div>
-            ))}
+            ))} */}
         </div>
     );
 };

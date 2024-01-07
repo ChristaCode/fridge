@@ -49,6 +49,43 @@ const parseLlamaRecipes = (text) => {
     };
 };
 
+function parseFlaxRecipe(recipeString) {
+    let recipe = {};
+
+    // Splitting the string into title, ingredients, and directions parts
+    const parts = recipeString.split(/ ingredients: | directions: /);
+
+    // Extracting the title
+    recipe.title = parts[0].split('title: ')[1].trim();
+
+    // Processing ingredients
+    const ingredientsList = parts[1].split(' ');
+    let ingredients = {};
+    for (let i = 0; i < ingredientsList.length; i += 3) {
+        let ingredient = ingredientsList[i + 2];
+        let quantity = ingredientsList[i] + ' ' + ingredientsList[i + 1];
+
+        // Handling multi-word ingredient names
+        while (i + 3 < ingredientsList.length && !ingredientsList[i + 3].match(/^\d/)) {
+            i++;
+            ingredient += ' ' + ingredientsList[i + 2];
+        }
+
+        ingredients[ingredient] = quantity;
+    }
+    recipe.ingredients = ingredients;
+
+    // Processing directions
+    recipe.directions = parts[2].split('. ').map(direction => direction.trim() + '.');
+    recipe.instructions = parts[2].split('. ').map(instruction => instruction.trim() + '.');
+
+    return {
+        title: recipe.title,
+        ingredients: recipe.directions,
+        instructions: recipe.instructions,
+    };
+}
+
 const fetchMealDetails = async (mealIds, newFridgeItems, kitchenBasics) => {
     try {
         const mealDetailsPromises = mealIds.map(id => 
@@ -151,24 +188,40 @@ const parseMealRecipes = (response) => {
 
 app.post('/api/recipes/flax', async (req, res) => {
     async function query(data) {
-        const response = await fetch(
-            "https://api-inference.huggingface.co/models/flax-community/t5-recipe-generation",
-            {
-                headers: { Authorization: "Bearer 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" },
-                method: "POST",
-                body: JSON.stringify(data),
+        try {
+            const response = await fetch(
+                "https://api-inference.huggingface.co/models/flax-community/t5-recipe-generation",
+                {
+                    headers: { Authorization: `Bearer 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` },
+                    method: "POST",
+                    body: JSON.stringify(data),
+                }
+            );
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
-        );
-        const result = await response.json();
-        return result;
+            return await response.json();
+        } catch (error) {
+            console.error('Error during FLAX API call:', error);
+            throw new Error('FLAX API error');
+        }
     }
-    
-    const { fridgeItems, kitchenBasics } = req.body;
-    const combined = fridgeItems.join(", ") + kitchenBasics.join(", ")
 
-    query({"inputs": combined}).then((response) => {
-        console.log(JSON.stringify(response));
-    });
+    const { fridgeItems, kitchenBasics } = req.body;
+    const combined = fridgeItems.join(", ") + ", " + kitchenBasics.join(", ");
+
+    try {
+        const response = await query({"inputs": combined});
+        if (response) {
+            const parsedResponse = parseFlaxRecipe(response[0]?.generated_text)
+            return res.json({ recipes: parsedResponse });
+        } else {
+            return res.json({ recipes: [] });
+        }
+    } catch (error) {
+        console.error('Error during Flax API call:', error);
+        return res.status(500).send('Error processing request');
+    }
 });
 
 app.post('/api/recipes/huggingface', async (req, res) => {
@@ -201,8 +254,6 @@ app.post('/api/recipes/huggingface', async (req, res) => {
         };
 
         const response = await query(inputData);
-        console.log("generatedText")
-        console.log(response[0])
         if (response) {
             const llamaRecipes = parseLlamaRecipes(response[0].generated_text);
             res.json({ recipes: llamaRecipes });

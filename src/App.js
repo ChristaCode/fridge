@@ -72,10 +72,9 @@ const App = () => {
             setIsLoading(true);
             try {
                 const response = await axios.post('/api/recipes/flax', { fridgeItems, kitchenBasics });
-                console.log(response);
-                
-                setRecipes(response.data.recipes);
-                setIsLoading(false);
+                if (response) {
+                    setRecipes(response.data);
+                }
             } catch (error) {
                 console.log(error.message);
                 setIsLoading(false);
@@ -84,10 +83,10 @@ const App = () => {
             }
         }
 
-        callHFLlama70b();
-        callMealDBMult();
+        // callHFLlama70b();
+        // callMealDBMult();
         callFlax();
-        callGPT();
+        // callGPT();
     }
 
     return (
