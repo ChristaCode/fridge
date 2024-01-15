@@ -2,6 +2,7 @@
   "name": "fridge",
   "version": "0.1.0",
   "private": true,
+  "plugins": ["react-hot-loader/babel"],
   "dependencies": {
     "@babel/core": "^7.23.7",
     "@babel/preset-env": "^7.23.7",
@@ -23,7 +24,7 @@
     "webpack-dev-server": "^4.15.1"
   },
   "scripts": {
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "build": "webpack --mode production",
     "heroku-postbuild": "npm run build",
     "test": "react-scripts test",

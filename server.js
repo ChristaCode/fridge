@@ -28,7 +28,7 @@ app.get('*', (req, res) => {
   });
 
   const hobbitArr = [{
-    "title": "Baked Garlic Parmesan Chicken",
+    "title": ["Baked Garlic Parmesan Chicken"],
     "ingredients": [
         "4 chicken thighs",
         "1 tsp salt"
@@ -39,15 +39,15 @@ app.get('*', (req, res) => {
     ]
     },
     {
-        "title": "Baked Garlic Parmesan Chicken",
-        "ingredients": [
-            "4 chicken thighs",
-            "1 tsp salt"
-        ],
-        "instructions": [
-            "1. Preheat the oven to 375°F.",
-            "2. Coat each chicken thigh in the flour mixture and place on a greased baking sheet."
-        ]
+    "title": ["Baked Garlic Parmesan Chicken"],
+    "ingredients": [
+        "4 chicken thighs",
+        "1 tsp salt"
+    ],
+    "instructions": [
+        "1. Preheat the oven to 375°F.",
+        "2. Coat each chicken thigh in the flour mixture and place on a greased baking sheet."
+    ]
     }];
 
 function replaceSpacesWithUnderscores(strings) {
@@ -55,19 +55,26 @@ function replaceSpacesWithUnderscores(strings) {
   }
 
 const parseLlamaRecipes = (text) => {
-    const titleRegex = /Title: ([^\n]*)/;
-    const ingredientsRegex = /Ingredients:([\s\S]*?)(?=\n\n[^\n]+:|\n*$)/;
-    const instructionsRegex = /Instructions:([\s\S]*?)\n(?=\n|$)/;
+    // Split the text into individual recipes using 'END' as a delimiter
+    const recipeSections = text.split('END\n').filter(section => section.trim());
 
-    const titleMatch = text.match(titleRegex);
-    const ingredientsMatch = text.match(ingredientsRegex);
-    const instructionsMatch = text.match(instructionsRegex);
+    const recipes = recipeSections.map(section => {
+        // Extract the title
+        const titleMatch = section.match(/\d+\.\s*(.*?)\n/);
+        const title = titleMatch ? titleMatch[1].trim() : 'Unknown Title';
 
-    return {
-        title: titleMatch ? titleMatch[1].trim() : null,
-        ingredients: ingredientsMatch ? ingredientsMatch[1].trim().split('\n') : [],
-        instructions: instructionsMatch ? instructionsMatch[1].trim().split('\n') : [],
-    };
+        // Extract the ingredients
+        const ingredientsMatch = section.match(/Ingredients:\n(.*?)\n/);
+        const ingredients = ingredientsMatch ? ingredientsMatch[1].split(',').map(ingredient => ingredient.trim()) : [];
+
+        // Extract the instructions
+        const instructionsMatch = section.match(/Instructions:\n([\s\S]*?)\n(?=\n|$)/);
+        const instructions = instructionsMatch ? instructionsMatch[1].trim().split('\n').map(step => step.trim()) : [];
+
+        return { title, ingredients, instructions };
+    });
+
+    return recipes;
 };
 
 function capitalizeWords(string) {
@@ -178,41 +185,40 @@ const fetchMealDetails = async (mealIds, newFridgeItems, kitchenBasics) => {
     }
 };
 
-function parseRecipes(text) {
-    const recipes = [];
-    let currentRecipe = { title: '', ingredients: [], instructions: [] };
-    let isCollectingIngredients = true;
+function parseRecipes(recipeString) {
+    // Split the string into sections
+    const sections = recipeString.split('\n\n');
+    console.log('sections', sections)
 
-    text.split('\n').forEach(line => {
-        if (line.match(/^\d+\.\s+.+/)) {
-            // New recipe starts
-            if (currentRecipe.title) {
-                recipes.push(currentRecipe);
-            }
-            currentRecipe = { title: line.trim(), ingredients: [], instructions: [] };
-            isCollectingIngredients = true;
-        } else if (line.trim() && currentRecipe) {
-            if (isCollectingIngredients) {
-                if (line.match(/^\d+\./)) {
-                    // Start of instructions
-                    isCollectingIngredients = false;
-                    currentRecipe.instructions.push(line.trim());
-                } else {
-                    // Ingredient line
-                    currentRecipe.ingredients.push(line.trim());
-                }
-            } else {
-                // Continuation of instructions
-                currentRecipe.instructions.push(line.trim());
+    const recipes = [];
+
+    console.log('entering for loop');
+
+    for (const section of sections) {
+        console.log('section', section)
+        const lines = section.split('\n');
+        console.log('lines', lines)
+
+        const title = lines[0].trim();
+        console.log('title', title)
+
+        let ingredients = [];
+        let instructions = [];
+        let currentList = null;
+
+        for (let i = 1; i < lines.length; i++) {
+            if (lines[i].toLowerCase().startsWith('ingredients:')) {
+                currentList = ingredients;
+            } else if (lines[i].toLowerCase().startsWith('instructions:')) {
+                currentList = instructions;
+            } else if (currentList && lines[i].trim() !== '') {
+                currentList.push(lines[i].trim());
             }
         }
-    });
 
-    // Add the last recipe if it exists
-    if (currentRecipe.title) {
-        recipes.push(currentRecipe);
+        recipes.push({ title, ingredients, instructions });
     }
-    console.log(recipes);
+
     return recipes;
 }
 
@@ -311,7 +317,8 @@ app.post('/api/recipes/flax', async (req, res) => {
         const response = await query({"inputs": combined});
         if (response) {
             const parsedResponse = parseFlaxRecipe(response[0]?.generated_text)
-            console.log(response)
+            console.log('flax response');
+            console.log(parsedResponse)
             myCache.set(cacheKey, parsedResponse);
             return res.json({ recipes: parsedResponse });
         } else {
@@ -325,13 +332,13 @@ app.post('/api/recipes/flax', async (req, res) => {
 
 app.post('/api/recipes/huggingface', async (req, res) => {
     console.log('Received a request at /api/recipes/huggingface');
-    const { fridgeItems, kitchenBasics } = req.body;
+    const { fridgeItems, kitchenBasics, flaxRecipes } = req.body;
 
     async function query(data) {
         const requestData = {
             ...data,
             parameters: {
-                max_new_tokens: 1000
+                max_new_tokens: 4000
             }
         };
         const body = JSON.stringify(requestData);
@@ -348,6 +355,8 @@ app.post('/api/recipes/huggingface', async (req, res) => {
                 }
             );
             const result = await response.json();
+            console.log('70b response');
+            console.log(result);
             return result;
         } catch (error) {
             console.error('Error during Hugging Face API call:', error);
@@ -358,7 +367,7 @@ app.post('/api/recipes/huggingface', async (req, res) => {
 
     try {
         const inputData = {
-            "inputs": "generate a recipe given these ingredients " + fridgeItems.join(", ") + kitchenBasics + " Return the title, followed by the ingredients, followed by the instructions."
+            "inputs": "generate only 2 recipes given these ingredients. Respond with only the recipes. " + fridgeItems.join(", ") + kitchenBasics + " Return in the format Title: followed by the title, Ingredients: followed by the ingredients list, Instructions: followed by the numbered instructions in this format. " + hobbitArr + " At the end of each recipe, say 'END'.",
         };
 
         const response = await query(inputData);
@@ -367,6 +376,10 @@ app.post('/api/recipes/huggingface', async (req, res) => {
         if (response) {
             console.log('llama respones before parsing');
             const llamaRecipes = parseLlamaRecipes(response[0].generated_text);
+            
+            console.log('parsed llamaRecipes');
+            console.log(llamaRecipes);
+
             res.json({ recipes: llamaRecipes });
         } else {
             res.json({ recipes: [] });
@@ -427,7 +440,7 @@ app.post('/api/recipes/openai', async (req, res) => {
                 messages: [
                     {
                         role: 'user',
-                        content: `Please generate recipes given these ingredients: ${fridgeItems.join(", ")} ${kitchenBasics.join(", ")}. Return each recipe in the format of ${hobbitArr}}.`,
+                        content: `Please generate recipes given these ingredients: ${fridgeItems.join(", ")} ${kitchenBasics.join(", ")}. Return the recipes in the format of ${hobbitArr}, with the title, ingredients, and instructions each as a separate array.}.`,
                     }
                 ],
             },
@@ -440,11 +453,10 @@ app.post('/api/recipes/openai', async (req, res) => {
         );
 
         // Assuming parseRecipes is a correctly defined function
+        console.log('gpt response');
+        console.log(response.data.choices[0].message.content.trim());
         const recipesData = parseRecipes(response.data.choices[0].message.content.trim());
         myCache.set(cacheKey, recipesData);
-
-        console.log('gpt response');
-        console.log(recipesData)
         res.json({ recipes: recipesData });
     } catch (error) {
         res.status(500).send('Error processing request');

@@ -91,24 +91,24 @@ const RecipeListComponent = ({ llamaRecipes, mealDBRecipes, flaxRecipes, flaxRec
                             </ol>
                         </div>
                     )}
-                    {llamaRecipes && llamaRecipes.ingredients && (
-                        <div className="recipe-card">
-                            <h2 className="recipe-title">{llamaRecipes.title}</h2>
+                    {llamaRecipes && llamaRecipes.map((recipe, index) => (
+                        <div key={index} className="recipe-card">
+                            <h2 className="recipe-title">{recipe.title}</h2>
                             <h3>Ingredients:</h3>
                             <ul>
-                                {llamaRecipes.ingredients.map((ingredient, i) => (
+                                {recipe.ingredients.map((ingredient, i) => (
                                     <li key={i}>{ingredient}</li>
                                 ))}
                             </ul>
                             <h3>Instructions:</h3>
                             <ol>
-                                {llamaRecipes.instructions.map((instruction, i) => (
+                                {recipe.instructions.map((instruction, i) => (
                                     <li key={i}>{instruction}</li>
                                 ))}
                             </ol>
                         </div>
-                    )}
-                    {console.log('gptRecipes')}
+                    ))}
+                    {console.log('gptRecipes')} 
                     {console.log(gptRecipes)}
                     {gptRecipes && gptRecipes.map((recipe, index) => (
                         <div key={index} className="recipe-card">
@@ -119,13 +119,12 @@ const RecipeListComponent = ({ llamaRecipes, mealDBRecipes, flaxRecipes, flaxRec
                                     <li key={i}>{ingredient}</li>
                                 ))}
                             </ul>
-                             {/*
                             <h3>Instructions:</h3>
                             <ol>
                                 {recipe.instructions.split('\n').map((instruction, i) => (
                                     <li key={i}>{instruction}</li>
                                 ))}
-                            </ol> */}
+                            </ol>
                         </div>
                     ))}
                     {isLoading === true && (
