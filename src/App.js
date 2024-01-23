@@ -86,7 +86,7 @@ const App = () => {
             setIsLoading(true);
             try {
                 console.time('API callGPT Duration'); // Start the timer with a label
-                const response = await axios.post('/api/recipes/openai', { fridgeItems, kitchenBasics, recipeTitles});
+                const response = await axios.post('/api/recipes/openai', { fridgeItems, kitchenBasics});
                 setGPTRecipes(response.data.recipes);
             } catch (error) {
                 console.log(error.message);
