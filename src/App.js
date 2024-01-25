@@ -20,7 +20,7 @@ const App = () => {
         "instructions": [
             "1. Boil em\n 2. Mash um\n 3. Stick um in a stew"
         ]
-}];
+     }];
 
     const updateKitchenBasics = (val) => {
          setKitchenBasics(val)
@@ -48,7 +48,7 @@ const App = () => {
 
         const callHFLlama7b = async () => {
             try {
-                console.time('API llama70b Duration'); // Start the timer with a label
+                console.time('API llama7b Duration'); // Start the timer with a label
                 const response = await axios.post('/api/recipes/huggingface', { fridgeItems, kitchenBasics });
                 setLlamaRecipes(response.data.recipes);
             } catch (error) {

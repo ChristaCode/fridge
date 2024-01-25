@@ -21,10 +21,10 @@ app.use(express.json());
 
 const path = require('path');
 
-app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
   });
 
   const hobbitArr = [{
@@ -50,22 +50,21 @@ app.get('*', (req, res) => {
     ]
     }];
 
-
 const parseLlamaRecipes = (text) => {
-    // Split the text into individual recipes using 'END' as a delimiter
-    const recipeSections = text.split('END\n').filter(section => section.trim());
+        // Split the text into individual recipes using 'END' as a delimiter
+        const recipeSections = text.split('END\n').filter(section => section.trim());
 
-    const recipes = recipeSections.map(section => {
+        const recipes = recipeSections.map(section => {
         // Extract the title
-        const titleMatch = section.match(/\d+\.\s*(.*?)\n/);
+        const titleMatch = section.match(/^Title:\s*(.*?)\s*$/m);
         const title = titleMatch ? titleMatch[1].trim() : 'Unknown Title';
 
         // Extract the ingredients
-        const ingredientsMatch = section.match(/Ingredients:\n(.*?)\n/);
-        const ingredients = ingredientsMatch ? ingredientsMatch[1].split(',').map(ingredient => ingredient.trim()) : [];
+        const ingredientsMatch = section.match(/Ingredients:\n([\s\S]*?)\n\n/);
+        const ingredients = ingredientsMatch ? ingredientsMatch[1].split('\n').map(ingredient => ingredient.trim()) : [];
 
         // Extract the instructions
-        const instructionsMatch = section.match(/Instructions:\n([\s\S]*?)\n(?=\n|$)/);
+        const instructionsMatch = section.match(/Instructions:\n([\s\S]*?)$/);
         const instructions = instructionsMatch ? instructionsMatch[1].trim().split('\n').map(step => step.trim()) : [];
 
         return { title, ingredients, instructions };
