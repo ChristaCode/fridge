@@ -62,19 +62,19 @@ const App = () => {
             return;
         }
 
-        const callHFLlama70b = async (flaxRecipes) => {
-            try {
-                console.time('API llama70b Duration'); // Start the timer with a label
-                const response = await axios.post('/api/recipes/huggingface', { fridgeItems, kitchenBasics, flaxRecipes });
-                setLlamaRecipes(response.data.recipes);
-            } catch (error) {
-                console.log(error.response ? error.response.data : 'Failed to fetch from Llama API');
-                setIsLoading(false);
-            } finally {
-                setIsLoading(false);
-                console.timeEnd('API llama70b Duration'); // Stop the timer and log the duration
-            }
-        };
+        // const callHFLlama70b = async (flaxRecipes) => {
+        //     try {
+        //         console.time('API llama70b Duration'); // Start the timer with a label
+        //         const response = await axios.post('/api/recipes/huggingface', { fridgeItems, kitchenBasics, flaxRecipes });
+        //         setLlamaRecipes(response.data.recipes);
+        //     } catch (error) {
+        //         console.log(error.response ? error.response.data : 'Failed to fetch from Llama API');
+        //         setIsLoading(false);
+        //     } finally {
+        //         setIsLoading(false);
+        //         console.timeEnd('API llama70b Duration'); // Stop the timer and log the duration
+        //     }
+        // };
         
         const callMealDBMult = async () => {
             const response = await axios.post('/api/recipes/mealdb', { fridgeItems, kitchenBasics });
@@ -121,35 +121,37 @@ const App = () => {
                 setIsLoading(false);
             } finally {
                 console.timeEnd('API callFlax Duration'); // Stop the timer and log the duration
+                setIsLoading(false);
             }
         }
 
-        const flaxRecipe = await callFlax();
-        setFlaxRecipes(flaxRecipe);
-        callHFLlama70b(flaxRecipe);
+        // const flaxRecipe = await callFlax();
+        // setFlaxRecipes(flaxRecipe);
+        // callHFLlama70b(flaxRecipe);
 
         // callMealDBMult();
-        // const recipeTitles = [];
+        const recipeTitles = [];
 
         // callGPT();
 
         // setKitchenBasicsForFlax(kitchenBasics);
 
-        // const recipesOne = await callFlax(recipeTitles);
-        // setFlaxRecipes(recipesOne); // Assuming setFlaxRecipes can handle the data returned by callFlax
-        // recipeTitles.push(recipesOne.recipes.title);
+        const recipesOne = await callFlax(recipeTitles);
+        setFlaxRecipes(recipesOne); // Assuming setFlaxRecipes can handle the data returned by callFlax
+        recipeTitles.push(recipesOne.recipes.title);
 
-        // const recipesTwo = await callFlax(recipeTitles);
-        // if (!recipeTitles.includes(recipesOne)) setFlaxRecipesTwo(recipesTwo);
-        // recipeTitles.push(recipesTwo.recipes.title);
+        const recipesTwo = await callFlax(recipeTitles);
+        if (!recipeTitles.includes(recipesOne)) setFlaxRecipesTwo(recipesTwo);
+        recipeTitles.push(recipesTwo.recipes.title);
 
-        // const recipesThree = await callFlax(recipeTitles);
-        // if (!recipeTitles.includes(recipesTwo)) setFlaxRecipesThree(recipesThree);
-        // recipeTitles.push(recipesThree.recipes.title);
+        const recipesThree = await callFlax(recipeTitles);
+        if (!recipeTitles.includes(recipesTwo)) setFlaxRecipesThree(recipesThree);
+        recipeTitles.push(recipesThree.recipes.title);
 
-        // const recipesFour = await callFlax(recipeTitles);
-        // if (!recipeTitles.includes(recipesThree)) setFlaxRecipesFour(recipesFour);
-        // recipeTitles.push(recipesFour.recipes.title);
+        const recipesFour = await callFlax(recipeTitles);
+        if (!recipeTitles.includes(recipesThree)) setFlaxRecipesFour(recipesFour);
+        recipeTitles.push(recipesFour.recipes.title);
+        setIsLoading(false);
     }
 
     const shuffleArray = (array) => {

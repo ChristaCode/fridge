@@ -330,65 +330,65 @@ app.post('/api/recipes/flax', async (req, res) => {
     }
 });
 
-app.post('/api/recipes/huggingface', async (req, res) => {
-    console.log('Received a request at /api/recipes/huggingface');
-    const { fridgeItems, kitchenBasics, flaxRecipes } = req.body;
+// app.post('/api/recipes/huggingface', async (req, res) => {
+//     console.log('Received a request at /api/recipes/huggingface');
+//     const { fridgeItems, kitchenBasics } = req.body;
 
-    async function query(data) {
-        const requestData = {
-            ...data,
-            parameters: {
-                max_new_tokens: 4000
-            }
-        };
-        const body = JSON.stringify(requestData);
-        try {
-            const response = await fetch(
-                "https://api-inference.huggingface.co/models/meta-llama/Llama-2-70b-chat-hf",
-                {
-                    headers: { 
-                        "Authorization": "Bearer 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", 
-                        'Content-Type': 'application/json'
-                    },
-                    method: "POST",
-                    body: body,
-                }
-            );
-            const result = await response.json();
-            console.log('70b response');
-            console.log(result);
-            return result;
-        } catch (error) {
-            console.error('Error during Hugging Face API call:', error);
-            res.status(500).send('Error processing request');
-            throw new Error('Hugging Face API error');
-        }
-    }
+//     async function query(data) {
+//         const requestData = {
+//             ...data,
+//             parameters: {
+//                 max_new_tokens: 4000
+//             }
+//         };
+//         const body = JSON.stringify(requestData);
+//         try {
+//             const response = await fetch(
+//                 "https://api-inference.huggingface.co/models/TheBloke/guanaco-7B-HF",
+//                 {
+//                     headers: { 
+//                         "Authorization": "Bearer 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", 
+//                         'Content-Type': 'application/json'
+//                     },
+//                     method: "POST",
+//                     body: body,
+//                 }
+//             );
+//             const result = await response.json();
+//             console.log('70b response');
+//             console.log(result);
+//             return result;
+//         } catch (error) {
+//             console.error('Error during Hugging Face API call:', error);
+//             res.status(500).send('Error processing request');
+//             throw new Error('Hugging Face API error');
+//         }
+//     }
 
-    try {
-        const inputData = {
-            "inputs": "generate only 2 recipes given these ingredients. Respond with only the recipes. " + fridgeItems.join(", ") + kitchenBasics + " Return in the format Title: followed by the title, Ingredients: followed by the ingredients list, Instructions: followed by the numbered instructions in this format. " + hobbitArr + " At the end of each recipe, say 'END'.",
-        };
+//     try {
+//         const inputData = {
+//             "inputs": "generate only 2 recipes given these ingredients. Respond with only the recipes. " + fridgeItems.join(", ") + kitchenBasics + " Return in the format Title: followed by the title, Ingredients: followed by the ingredients list, Instructions: followed by the numbered instructions in this format. " + hobbitArr + " At the end of each recipe, say 'END'.",
+//         };
 
-        const response = await query(inputData);
-        console.log('free 70B', response);
-        console.log(response);
-        if (response) {
-            console.log('llama respones before parsing');
-            const llamaRecipes = parseLlamaRecipes(response[0].generated_text);
+//         const response = await query(inputData);
+//         console.log('free 70B', response);
+//         console.log(response);
+//         if (response) {
+//             console.log('llama respones before parsing');
+//             const llamaRecipes = parseLlamaRecipes(response[0].generated_text);
             
-            console.log('parsed llamaRecipes');
-            console.log(llamaRecipes);
+//             console.log('parsed llamaRecipes');
+//             console.log(llamaRecipes);
 
-            res.json({ recipes: llamaRecipes });
-        } else {
-            res.json({ recipes: [] });
-        }
-    } catch (error) {
-        res.status(500).send('Error processing request');
-        // Error already logged and response sent in the query function
-    }
-});
+//             res.json({ recipes: llamaRecipes });
+//         } else {
+//             res.json({ recipes: [] });
+//         }
+//     } catch (error) {
+//         res.status(500).send('Error processing request');
+//         // Error already logged and response sent in the query function
+//     }
+// });
 
 app.post('/api/recipes/mealdb', async (req, res) => {
     // Extracting fridgeItems from the request body
