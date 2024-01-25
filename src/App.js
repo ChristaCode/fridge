@@ -121,7 +121,6 @@ const App = () => {
                 setIsLoading(false);
             } finally {
                 console.timeEnd('API callFlax Duration'); // Stop the timer and log the duration
-                setIsLoading(false);
             }
         }
 
