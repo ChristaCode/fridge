@@ -56,12 +56,12 @@ const parseLlamaRecipes = (text) => {
 
         const recipes = recipeSections.map(section => {
         // Extract the title
-        const titleMatch = section.match(/^Title:\s*(.*?)\s*$/m);
-        const title = titleMatch ? titleMatch[1].trim() : 'Unknown Title';
+        const titleMatch = section.match(/(?<=[1].|Title:|[1]. Title:)\s*(.*?)\s*\n/);
+        const title = titleMatch ? titleMatch[0].trim() : 'Unknown Title';
 
         // Extract the ingredients
-        const ingredientsMatch = section.match(/Ingredients:\n([\s\S]*?)\n\n/);
-        const ingredients = ingredientsMatch ? ingredientsMatch[1].split('\n').map(ingredient => ingredient.trim()) : [];
+        const ingredientsMatch = section.match(/(?<=Ingredients:)(([\s\S]*?)(?=Instructions))/);
+        const ingredients = ingredientsMatch ? ingredientsMatch[1].trim().split(',').map(ingredient => ingredient.trim()) : [];
 
         // Extract the instructions
         const instructionsMatch = section.match(/Instructions:\n([\s\S]*?)$/);
@@ -93,7 +93,7 @@ app.post('/api/recipes/huggingface', async (req, res) => {
         const body = JSON.stringify(requestData);
         try {
             const response = await fetch(
-                "https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b-chat-hf",
+                "https://api-inference.huggingface.co/models/meta-llama/Llama-2-70b-chat-hf",
                 {
                     headers: { 
                         "Authorization": "Bearer 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", 
