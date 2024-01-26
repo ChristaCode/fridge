@@ -76,6 +76,12 @@ const parseLlamaRecipes = (text) => {
 app.post('/api/recipes/huggingface', async (req, res) => {
     console.log('Received a request at /api/recipes/huggingface');
     const { fridgeItems, kitchenBasics } = req.body;
+    const cacheKey = fridgeItems.join(",") + "," + kitchenBasics.join(",");
+
+    const cachedData = myCache.get(cacheKey);
+    if (cachedData) {
+        return res.json({ recipes: cachedData });
+    }
 
     async function query(data) {
         const requestData = {
