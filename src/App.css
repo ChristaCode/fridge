@@ -17,7 +17,8 @@ button {
 }
 
 .Recipe_Wrapper {
-  
+  display: flex;
+  justify-content: center;
 }
 
 button:hover {

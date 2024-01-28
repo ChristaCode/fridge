@@ -65,7 +65,6 @@ const App = () => {
 
     return (
         <div className="App">
-        <span className="Recipe Wrapper">
             <img src={logo} alt="FeastFinder Logo" style={{ maxWidth: '250px', height: 'auto' }} />
             <InputComponent 
                 onAddItem={handleAddItem} 
@@ -75,7 +74,6 @@ const App = () => {
             />
             <button onClick={handleSubmit}>Get Recipes</button>
             {isSubmitted && <RecipeListComponent llamaRecipes={llamaRecipes} isLoading={isLoading} />}
-        </span>
         </div>
     );
 }
