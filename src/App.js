@@ -31,6 +31,7 @@ const App = () => {
     };
 
     const handleSubmit = () => {
+        setLlamaRecipes(null)
         callAPI()
         setIsSubmitted(true);
     };
