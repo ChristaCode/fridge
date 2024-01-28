@@ -116,7 +116,7 @@ app.post('/api/recipes/huggingface', async (req, res) => {
 
     try {
         const inputData = {
-            "inputs": "generate only 2 recipes given these ingredients. Respond with only the recipes. " + fridgeItems.join(", ") + kitchenBasics + " Return in the format Title: followed by the title, Ingredients: followed by the ingredients list, Instructions: followed by the numbered instructions in this format. " + hobbitArr + " At the end of each recipe, say 'END'.",
+            "inputs": "generate only 2 recipes given these ingredients. The recipe can ONLY contain the ingredients given DO NOT ADD ANY OTHER INGREDIENTS BESIDES THE INGREDIENTS PROVIDED please. Prioritize gastronomically synergistic ingredients to maximize tastiness of the recipes. The recipes must be meals, snacks, or desserts. Prioritize the most popular recipes people enjoy. Respond with only the recipes. " + fridgeItems.join(", ") + kitchenBasics + " Return in the format Title: 'Recipe Title', Ingredients: (List of ingredients), Instructions: (Numbered List of Instructions) followed by " + hobbitArr + " At the end of each recipe, print the word 'END'.",
         };
 
         const response = await query(inputData);
