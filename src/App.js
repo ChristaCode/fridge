@@ -7,7 +7,7 @@ import axios from 'axios';
 
 const App = () => {
     const [fridgeItems, setFridgeItems] = useState([]);
-    const [kitchenBasics, setKitchenBasics] = useState(["salt", "pepper", "flour", "baking soda", "olive oil", "vegetable oil", "sugar", "mayonnaise", "ketchup", "garlic", "onion"]);
+    const [kitchenBasics, setKitchenBasics] = useState(["salt", "pepper", "flour", "baking soda", "oil", "sugar"]);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [llamaRecipes, setLlamaRecipes] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
