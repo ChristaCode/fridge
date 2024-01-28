@@ -24,7 +24,8 @@
     "webpack-dev-server": "^4.15.1"
   },
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "react-scripts start",
+    "server": "nodemon server.js",
     "build": "react-scripts build",
     "heroku-postbuild": "npm run build",
     "test": "react-scripts test",
