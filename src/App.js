@@ -7,6 +7,7 @@ import axios from 'axios';
 
 const App = () => {
     const [fridgeItems, setFridgeItems] = useState([]);
+    const [activeItemIndex, setActiveItemIndex] = useState(null);
     const [kitchenBasics, setKitchenBasics] = useState(["salt", "pepper", "flour", "baking soda", "oil", "sugar"]);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [llamaRecipes, setLlamaRecipes] = useState(null);
@@ -27,7 +28,11 @@ const App = () => {
       }
 
     const handleAddItem = (item) => {
-        setFridgeItems(prevItems => [...prevItems, item]);
+        setFridgeItems(prevItems => {
+            const updatedItems = [...prevItems, item];
+            setActiveItemIndex(updatedItems.length - 1); // Now correctly updates
+            return updatedItems;
+        });
     };
 
     const handleSubmit = () => {
@@ -74,7 +79,7 @@ const App = () => {
                 setKitchenBasics={updateKitchenBasics}
             />
             <button onClick={handleSubmit}>Get Recipes</button>
-            {isSubmitted && <RecipeListComponent llamaRecipes={llamaRecipes} isLoading={isLoading} />}
+            {isSubmitted && <RecipeListComponent llamaRecipes={llamaRecipes} isLoading={isLoading} activeItemIndex={activeItemIndex} />}
         </div>
     );
 }
