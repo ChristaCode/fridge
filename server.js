@@ -24,10 +24,20 @@ const path = require('path');
 
 app.use(express.static(path.join(__dirname, 'build')));
 
-app.get('/data', async (req, res) => {
+app.get('/ingredients', async (req, res) => {
     const { rows } = await pool.query('SELECT * FROM ingredients');
     res.json(rows);
   });
+
+app.get('/recipes', async (req, res) => {
+    const { rows } = await pool.query('SELECT * FROM ingredients');
+    res.json(rows);
+});
+
+app.get('/users', async (req, res) => {
+    const { rows } = await pool.query('SELECT * FROM ingredients');
+    res.json(rows);
+});
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));

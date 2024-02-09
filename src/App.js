@@ -4,6 +4,7 @@ import RecipeListComponent from './RecipeListComponent';
 import './App.css';
 import logo from './feastFinderLogo.png';
 import axios from 'axios';
+import AdminComponent from './AdminComponent';
 
 const App = () => {
     const [fridgeItems, setFridgeItems] = useState([]);

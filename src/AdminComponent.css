@@ -1,0 +1,9 @@
+/* styles.css */
+.table th, .table td {
+    border-right: 1px solid black;
+  }
+  
+  .table th:last-child, .table td:last-child {
+    border-right: none;
+  }
+  
