@@ -30,12 +30,12 @@ app.get('/ingredients', async (req, res) => {
   });
 
 app.get('/recipes', async (req, res) => {
-    const { rows } = await pool.query('SELECT * FROM ingredients');
+    const { rows } = await pool.query('SELECT * FROM recipes');
     res.json(rows);
 });
 
 app.get('/users', async (req, res) => {
-    const { rows } = await pool.query('SELECT * FROM ingredients');
+    const { rows } = await pool.query('SELECT * FROM users');
     res.json(rows);
 });
 
