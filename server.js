@@ -2,6 +2,7 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const pool = require('./db');
 
 const app = express();
 const NodeCache = require('node-cache');
@@ -22,6 +23,11 @@ app.use(express.json());
 const path = require('path');
 
 app.use(express.static(path.join(__dirname, 'build')));
+
+app.get('/data', async (req, res) => {
+    const { rows } = await pool.query('SELECT * FROM ingredients');
+    res.json(rows);
+  });
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
