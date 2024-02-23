@@ -12,27 +12,30 @@ body {
 button {
   background-color: #4CAF50;
   color: white;
-  padding: 10px 20px;
+  padding: 12px 24px;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
-  margin-top: 15px;
+  font-size: 18px;
+  margin-top: 20px;
+  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 button:hover {
   background-color: #45a049;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 input[type="text"] {
-  padding: 10px;
+  padding: 12px;
   margin-right: 10px;
   border: 1px solid #ddd;
-  border-radius: 4px;
   width: 300px;
-  font-size: 16px;
+  font-size: 18px;
   background-color: #FEFDF9;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+
 
 .kitchen-basic {
   border: 1px solid gray;

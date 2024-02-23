@@ -37,7 +37,8 @@ function AdminPanel() {
   const columnsRecipes = [
     { Header: 'ID', accessor: 'id' },
     { Header: 'Title', accessor: 'title' },
-    { Header: 'Description', accessor: 'description' },
+    { Header: 'Ingredients', accessor: 'ingredients' },
+    { Header: 'Instructions', accessor: 'instructions' },
   ];
 
   const columnsUsers = [
@@ -86,8 +87,10 @@ function AdminPanel() {
     <div>
       <h1>Admin Panel</h1>
       <Table data={tablesData.ingredients} columns={columnsIngredients} />
-      {/* <Table data={tablesData.recipes} columns={columnsRecipes} />
-      <Table data={tablesData.users} columns={columnsUsers} /> */}
+      <br />
+      <h2>Recipes</h2>
+      <Table data={tablesData.recipes} columns={columnsRecipes} />
+      {/* <Table data={tablesData.users} columns={columnsUsers} />  */}
     </div>
   );
 }

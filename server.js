@@ -17,7 +17,7 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-app.use(cors()); // Enable CORS for all origins
+app.use(cors());
 app.use(express.json());
 
 const path = require('path');
@@ -32,6 +32,25 @@ app.get('/ingredients', async (req, res) => {
 app.get('/recipes', async (req, res) => {
     const { rows } = await pool.query('SELECT * FROM recipes');
     res.json(rows);
+});
+
+app.post('/recipes', async (req, res) => {
+    try {
+        const { title, ingredients, instructions, timestamp } = req.body;
+
+        const ingredientsString = JSON.stringify(ingredients);
+        const instructionsString = JSON.stringify(instructions);
+
+        const newRecipe = await pool.query(
+            'INSERT INTO recipes (title, ingredients, instructions, created_at) VALUES ($1, $2, $3, $4)',
+            [title, ingredientsString, instructionsString, timestamp]
+        );
+
+        res.json(newRecipe.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
 });
 
 app.get('/users', async (req, res) => {
@@ -72,7 +91,7 @@ const parseLlamaRecipes = (text) => {
 
         const recipes = recipeSections.map(section => {
         // Extract the title
-        const titleMatch = section.match(/(?<=[1].|Title:|[1]. Title:)\s*(.*?)\s*\n/);
+        const titleMatch = section.match(/(?<=[1].|Title:|[1]. Title:)\s*(.*?)\s*,\s*(?!Ingredients:)/g);
         const title = titleMatch ? titleMatch[0].trim() : 'Unknown Title';
 
         // Extract the ingredients
@@ -90,7 +109,6 @@ const parseLlamaRecipes = (text) => {
 };
 
 app.post('/api/recipes/huggingface', async (req, res) => {
-    console.log('Received a request at /api/recipes/huggingface');
     const { fridgeItems, kitchenBasics } = req.body;
     const cacheKey = fridgeItems.join(",") + "," + kitchenBasics.join(",");
 
@@ -120,8 +138,6 @@ app.post('/api/recipes/huggingface', async (req, res) => {
                 }
             );
             const result = await response.json();
-            console.log('7b response');
-            console.log(result);
             return result;
         } catch (error) {
             console.error('Error during Hugging Face API call:', error);
@@ -136,15 +152,8 @@ app.post('/api/recipes/huggingface', async (req, res) => {
         };
 
         const response = await query(inputData);
-        console.log('free 70B', response);
-        console.log(response);
         if (response) {
-            console.log('llama respones before parsing');
             const llamaRecipes = parseLlamaRecipes(response[0].generated_text);
-            
-            console.log('parsed llamaRecipes');
-            console.log(llamaRecipes);
-
             res.json({ recipes: llamaRecipes });
         } else {
             res.json({ recipes: [] });

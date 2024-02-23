@@ -4,7 +4,6 @@ import RecipeListComponent from './RecipeListComponent';
 import './App.css';
 import logo from './feastFinderLogo.png';
 import axios from 'axios';
-import AdminComponent from './AdminComponent';
 
 const App = () => {
     const [fridgeItems, setFridgeItems] = useState([]);
@@ -31,7 +30,7 @@ const App = () => {
     const handleAddItem = (item) => {
         setFridgeItems(prevItems => {
             const updatedItems = [...prevItems, item];
-            setActiveItemIndex(updatedItems.length - 1); // Now correctly updates
+            setActiveItemIndex(updatedItems.length - 1);
             return updatedItems;
         });
     };
@@ -55,14 +54,14 @@ const App = () => {
 
         const callHFLlama7b = async () => {
             try {
-                console.time('API llama7b Duration'); // Start the timer with a label
+                console.time('API llama7b Duration');
                 const response = await axios.post('/api/recipes/huggingface', { fridgeItems, kitchenBasics });
                 setLlamaRecipes(response.data.recipes);
             } catch (error) {
                 console.log(error.response ? error.response.data : 'Failed to fetch from Llama API');
                 setIsLoading(false);
             } finally {
-                console.timeEnd('API llama70b Duration'); // Stop the timer and log the duration
+                console.timeEnd('API llama70b Duration');
             }
         };
 
