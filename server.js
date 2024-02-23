@@ -36,23 +36,75 @@ app.get('/recipes', async (req, res) => {
 
 app.post('/recipes', async (req, res) => {
     try {
-        const { title, ingredients, instructions, timestamp } = req.body;
-
-        const ingredientsString = JSON.stringify(ingredients);
-        const instructionsString = JSON.stringify(instructions);
-
-        const newRecipe = await pool.query(
-            'INSERT INTO recipes (title, ingredients, instructions, created_at) VALUES ($1, $2, $3, $4)',
-            [title, ingredientsString, instructionsString, timestamp]
+      const { title, ingredients, instructions, timestamp } = req.body;
+      
+      await pool.query('BEGIN');
+      
+      const ingredientsString = JSON.stringify(ingredients);
+      const instructionsString = JSON.stringify(instructions);
+      
+      const recipeResult = await pool.query(
+        'INSERT INTO recipes (title, ingredients, instructions, created_at) VALUES ($1, $2, $3, $4) RETURNING recipe_id',
+        [title, ingredientsString, instructionsString, timestamp]
+      );
+      const recipeId = recipeResult.rows[0].recipe_id;
+      
+      for (const ingredientName of ingredients) {
+        const ingredientId = await getOrInsertIngredient(ingredientName);
+        
+        await pool.query(
+          'INSERT INTO recipe_ingredients (recipe_id, ingredient_id) VALUES ($1, $2)',
+          [recipeId, ingredientId]
         );
-
-        res.json(newRecipe.rows[0]);
+      }
+      await pool.query('COMMIT');
+      
+      res.json({ recipeId: recipeId });
     } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
+      await pool.query('ROLLBACK');
+      
+      console.error(err.message);
+      res.status(500).send('Server error');
     }
-});
+  });
 
+async function getOrInsertIngredient(ingredientName) {
+    let result = await pool.query(
+        'SELECT ingredient_id FROM ingredients WHERE name = $1',
+        [ingredientName]
+    );
+
+    if (result.rows.length === 0) {
+        result = await pool.query(
+        'INSERT INTO ingredients (name) VALUES ($1) RETURNING ingredient_id',
+        [ingredientName]
+        );
+    }
+
+    return result.rows[0].ingredient_id;
+}
+  
+app.get('/recipes/search', async (req, res) => {
+    try {
+      const ingredientNames = req.query.ingredients.split(',');
+  
+      const recipes = await pool.query(
+        `SELECT DISTINCT r.recipe_id, r.title, r.ingredients, r.instructions, r.created_at
+         FROM recipes r
+         JOIN recipe_ingredients ri ON r.recipe_id = ri.recipe_id
+         JOIN ingredients i ON ri.ingredient_id = i.ingredient_id
+         WHERE i.name = ANY($1)
+         ORDER BY r.title;`,
+        [ingredientNames]
+      );
+  
+      res.json(recipes.rows);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server error');
+    }
+  });
+  
 app.get('/users', async (req, res) => {
     const { rows } = await pool.query('SELECT * FROM users');
     res.json(rows);
