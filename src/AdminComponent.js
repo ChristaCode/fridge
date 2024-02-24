@@ -35,7 +35,6 @@ function AdminPanel() {
   ];
 
   const columnsRecipes = [
-    { Header: 'ID', accessor: 'id' },
     { Header: 'Title', accessor: 'title' },
     { Header: 'Ingredients', accessor: 'ingredients' },
     { Header: 'Instructions', accessor: 'instructions' },

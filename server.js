@@ -103,7 +103,7 @@ app.get('/recipes/search', async (req, res) => {
       console.error(err.message);
       res.status(500).send('Server error');
     }
-  });
+});
   
 app.get('/users', async (req, res) => {
     const { rows } = await pool.query('SELECT * FROM users');

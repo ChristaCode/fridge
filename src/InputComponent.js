@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './InputComponent.css';
 
 const InputComponent = ({ onAddItem, fridgeItems, kitchenBasics, setKitchenBasics }) => {
     const [item, setItem] = useState('');
@@ -45,7 +46,7 @@ const InputComponent = ({ onAddItem, fridgeItems, kitchenBasics, setKitchenBasic
                 </div>
             <div style={{ marginTop: '20px' }}>
                 {fridgeItems.map((fridgeItem) => (
-                    <div key={fridgeItem} style={{ border: '1px solid gray', padding: '10px', margin: '5px', display: 'inline-block' }}>
+                    <div key={fridgeItem} className="fridgeItem">
                         {fridgeItem}
                     </div>
                 ))}

@@ -71,14 +71,16 @@ const App = () => {
 
     return (
         <div className="App">
-            <img src={logo} alt="FeastFinder Logo" style={{ maxWidth: '250px', height: 'auto' }} />
-            <InputComponent 
-                onAddItem={handleAddItem} 
-                fridgeItems={fridgeItems} 
-                kitchenBasics={kitchenBasics}
-                setKitchenBasics={updateKitchenBasics}
-            />
-            <button onClick={handleSubmit}>Get Recipes</button>
+            <div className="Top">
+                <img src={logo} alt="FeastFinder Logo" style={{ maxWidth: '250px', height: 'auto' }} />
+                <InputComponent 
+                    onAddItem={handleAddItem} 
+                    fridgeItems={fridgeItems}
+                    kitchenBasics={kitchenBasics}
+                    setKitchenBasics={updateKitchenBasics}
+                />
+                <button onClick={handleSubmit}>Get Recipes</button>
+            </div>
             {isSubmitted && <RecipeListComponent llamaRecipes={llamaRecipes} isLoading={isLoading} activeItemIndex={activeItemIndex} />}
         </div>
     );

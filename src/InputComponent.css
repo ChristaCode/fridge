@@ -26,3 +26,27 @@ button {
 button:hover {
     background-color: #45a049;
 } */
+
+.fridgeItem {
+    padding: 15px;
+    margin: 5px;
+    font-size: 24px;
+    font-weight: bold;
+    display: inline-block;
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    background-color: #4fbacf;
+}
+
+.kitchen-basic:hover {
+    background-color: #96cde5; /* Light grey background on hover */
+    color: white; /* Change text color on hover */
+    font-weight: bold;
+}
+
+.kitchen-basic::after {
+    content: ' ✖'; /* Adds a 'delete' cross symbol after the item */
+    color: #c80700;
+    font-weight: bold;
+}

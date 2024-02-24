@@ -6,7 +6,13 @@
 }
 
 body {
-  background-color: #FDEBDB;
+  background-color: #fff2e9;
+}
+
+.Top {
+  background-color: white;
+  padding: 20px;
+  margin: 20px;
 }
 
 button {
@@ -15,7 +21,8 @@ button {
   padding: 12px 24px;
   border: none;
   cursor: pointer;
-  font-size: 18px;
+  font-weight: bold;
+  font-size: 24px;
   margin-top: 20px;
   transition: box-shadow 0.3s ease, background-color 0.3s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -31,31 +38,31 @@ input[type="text"] {
   margin-right: 10px;
   border: 1px solid #ddd;
   width: 300px;
-  font-size: 18px;
+  font-size: 24px;
   background-color: #FEFDF9;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-
 .kitchen-basic {
-  border: 1px solid gray;
-  padding: 10px;
+  padding: 15px;
   margin: 5px;
+  font-size: 24px;
+  font-weight: bold;
   display: inline-block;
-  color: black;
+  color: rgb(255, 255, 255);
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
-  background-color: #FEFDF9;
-  border-radius: 5px;
+  background-color: #4fbacf;
 }
 
 .kitchen-basic:hover {
-  background-color: #f2f2f2; /* Light grey background on hover */
-  color: #d9534f; /* Change text color on hover */
+  background-color: #96cde5; /* Light grey background on hover */
+  color: white; /* Change text color on hover */
+  font-weight: bold;
 }
 
 .kitchen-basic::after {
   content: ' ✖'; /* Adds a 'delete' cross symbol after the item */
-  color: #d9534f;
+  color: #c80700;
   font-weight: bold;
 }
