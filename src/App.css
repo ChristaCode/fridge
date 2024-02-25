@@ -2,11 +2,11 @@
   font-family: 'Arial', sans-serif;
   text-align: center;
   padding: 20px;
-  color: #333;
+  color: #333333;
 }
 
 body {
-  background-color: #fff2e9;
+  background-color: #F5F5F5;
 }
 
 .Top {
@@ -16,7 +16,7 @@ body {
 }
 
 button {
-  background-color: #4CAF50;
+  background-color: #FFA500;
   color: white;
   padding: 12px 24px;
   border: none;

@@ -212,7 +212,5 @@ app.post('/api/recipes/huggingface', async (req, res) => {
         }
     } catch (error) {
         res.status(500).send('Error processing request');
-        // Error already logged and response sent in the query function
     }
 });
-

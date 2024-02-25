@@ -13,6 +13,10 @@ const App = () => {
     const [llamaRecipes, setLlamaRecipes] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    const handleDeleteItem = (item) => {
+        setFridgeItems(fridgeItems.filter(fridgeItem => fridgeItem !== item));
+    };
+
     const hobbitArr = [{
         "title": "Looks like meats back on the menu, boys",
         "ingredients": [
@@ -75,6 +79,7 @@ const App = () => {
                 <img src={logo} alt="FeastFinder Logo" style={{ maxWidth: '250px', height: 'auto' }} />
                 <InputComponent 
                     onAddItem={handleAddItem} 
+                    onDeleteItem={handleDeleteItem}
                     fridgeItems={fridgeItems}
                     kitchenBasics={kitchenBasics}
                     setKitchenBasics={updateKitchenBasics}

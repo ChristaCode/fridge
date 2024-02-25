@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './InputComponent.css';
 
-const InputComponent = ({ onAddItem, fridgeItems, kitchenBasics, setKitchenBasics }) => {
+const InputComponent = ({ onAddItem, onDeleteItem, fridgeItems, kitchenBasics, setKitchenBasics }) => {
     const [item, setItem] = useState('');
     const [isDuplicate, setIsDuplicate] = useState(false);
 
@@ -18,6 +18,18 @@ const InputComponent = ({ onAddItem, fridgeItems, kitchenBasics, setKitchenBasic
 
     const handleDeleteBasic = (basic) => {
         setKitchenBasics(kitchenBasics.filter(item => item !== basic));
+    };
+
+    const handleClick = (e, fridgeItem) => {
+        // Get the dimensions of the target element (the fridgeItem div)
+        const targetRect = e.target.getBoundingClientRect();
+        // Calculate the x-coordinate for the left edge of the "X" (pseudo-element)
+        const xRightEdge = targetRect.right;
+        const xLeftEdge = xRightEdge - 40; // Assuming the "X" and some padding is about 40px wide
+        // Check if the click is within the "X" area
+        if (e.clientX >= xLeftEdge && e.clientX <= xRightEdge) {
+            onDeleteItem(fridgeItem);
+        }
     };
 
     return (
@@ -44,9 +56,13 @@ const InputComponent = ({ onAddItem, fridgeItems, kitchenBasics, setKitchenBasic
                         </div>
                     ))}
                 </div>
-            <div style={{ marginTop: '20px' }}>
+                <div style={{ marginTop: '20px' }}>
                 {fridgeItems.map((fridgeItem) => (
-                    <div key={fridgeItem} className="fridgeItem">
+                    <div 
+                        key={fridgeItem} 
+                        className="fridgeItem"
+                        onClick={(e) => handleClick(e, fridgeItem)} // Attach the click handler here
+                    >
                         {fridgeItem}
                     </div>
                 ))}
