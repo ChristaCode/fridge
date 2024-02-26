@@ -6,7 +6,7 @@
 }
 
 body {
-  background-color: #F5F5F5;
+  background-color: #f2e3d4;
 }
 
 .Top {
@@ -56,13 +56,13 @@ input[type="text"] {
 }
 
 .kitchen-basic:hover {
-  background-color: #96cde5; /* Light grey background on hover */
-  color: white; /* Change text color on hover */
+  background-color: #96cde5;
+  color: white;
   font-weight: bold;
 }
 
 .kitchen-basic::after {
-  content: ' ✖'; /* Adds a 'delete' cross symbol after the item */
+  content: ' ✖';
   color: #c80700;
   font-weight: bold;
 }

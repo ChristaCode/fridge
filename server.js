@@ -36,37 +36,48 @@ app.get('/recipes', async (req, res) => {
 
 app.post('/recipes', async (req, res) => {
     try {
-      const { title, ingredients, instructions, timestamp } = req.body;
-      
-      await pool.query('BEGIN');
-      
-      const ingredientsString = JSON.stringify(ingredients);
-      const instructionsString = JSON.stringify(instructions);
-      
-      const recipeResult = await pool.query(
-        'INSERT INTO recipes (title, ingredients, instructions, created_at) VALUES ($1, $2, $3, $4) RETURNING recipe_id',
-        [title, ingredientsString, instructionsString, timestamp]
-      );
-      const recipeId = recipeResult.rows[0].recipe_id;
-      
-      for (const ingredientName of ingredients) {
-        const ingredientId = await getOrInsertIngredient(ingredientName);
+        const { title, ingredients, instructions, timestamp } = req.body;
         
-        await pool.query(
-          'INSERT INTO recipe_ingredients (recipe_id, ingredient_id) VALUES ($1, $2)',
-          [recipeId, ingredientId]
+        // Check if a recipe with the same title already exists
+        const checkResult = await pool.query(
+            'SELECT recipe_id FROM recipes WHERE title = $1',
+            [title]
         );
-      }
-      await pool.query('COMMIT');
-      
-      res.json({ recipeId: recipeId });
+        
+        // If a recipe with the same title exists, return an error or message
+        if (checkResult.rows.length > 0) {
+            return res.status(400).json({ message: 'A recipe with the same title already exists.' });
+        }
+        
+        await pool.query('BEGIN');
+        
+        const ingredientsString = JSON.stringify(ingredients);
+        const instructionsString = JSON.stringify(instructions);
+        
+        const recipeResult = await pool.query(
+            'INSERT INTO recipes (title, ingredients, instructions, created_at) VALUES ($1, $2, $3, $4) RETURNING recipe_id',
+            [title, ingredientsString, instructionsString, timestamp]
+        );
+        const recipeId = recipeResult.rows[0].recipe_id;
+        
+        for (const ingredientName of ingredients) {
+            const ingredientId = await getOrInsertIngredient(ingredientName);
+            
+            await pool.query(
+                'INSERT INTO recipe_ingredients (recipe_id, ingredient_id) VALUES ($1, $2)',
+                [recipeId, ingredientId]
+            );
+        }
+        await pool.query('COMMIT');
+        
+        res.json({ recipeId: recipeId });
     } catch (err) {
-      await pool.query('ROLLBACK');
-      
-      console.error(err.message);
-      res.status(500).send('Server error');
+        await pool.query('ROLLBACK');
+        
+        console.error(err.message);
+        res.status(500).send('Server error');
     }
-  });
+});
 
 async function getOrInsertIngredient(ingredientName) {
     let result = await pool.query(
@@ -84,27 +95,27 @@ async function getOrInsertIngredient(ingredientName) {
     return result.rows[0].ingredient_id;
 }
   
-app.get('/recipes/search', async (req, res) => {
+app.post('/recipes/search', async (req, res) => {
     try {
-      const ingredientNames = req.query.ingredients.split(',');
-  
-      const recipes = await pool.query(
-        `SELECT DISTINCT r.recipe_id, r.title, r.ingredients, r.instructions, r.created_at
-         FROM recipes r
-         JOIN recipe_ingredients ri ON r.recipe_id = ri.recipe_id
-         JOIN ingredients i ON ri.ingredient_id = i.ingredient_id
-         WHERE i.name = ANY($1)
-         ORDER BY r.title;`,
-        [ingredientNames]
-      );
-  
-      res.json(recipes.rows);
+        const { fridgeItems } = req.body;
+
+        const recipes = await pool.query(
+            `SELECT DISTINCT r.recipe_id, r.title, r.ingredients, r.instructions, r.created_at
+             FROM recipes r
+             JOIN recipe_ingredients ri ON r.recipe_id = ri.recipe_id
+             JOIN ingredients i ON ri.ingredient_id = i.ingredient_id
+             WHERE i.name = ANY($1)
+             ORDER BY r.title;`,
+            [fridgeItems]
+        );
+
+        res.json(recipes.rows);
     } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server error');
+        console.error(err.message);
+        res.status(500).send('Server error');
     }
 });
-  
+
 app.get('/users', async (req, res) => {
     const { rows } = await pool.query('SELECT * FROM users');
     res.json(rows);
@@ -138,7 +149,6 @@ app.get('*', (req, res) => {
     }];
 
 const parseLlamaRecipes = (text) => {
-        // Split the text into individual recipes using 'END' as a delimiter
         const recipeSections = text.split('END\n').filter(section => section.trim());
 
         const recipes = recipeSections.map(section => {
@@ -146,11 +156,9 @@ const parseLlamaRecipes = (text) => {
         const titleMatch = section.match(/(?<=[1].|Title:|[1]. Title:)\s*(.*?)\s*,\s*(?!Ingredients:)/g);
         const title = titleMatch ? titleMatch[0].trim() : 'Unknown Title';
 
-        // Extract the ingredients
         const ingredientsMatch = section.match(/(?<=Ingredients:)(([\s\S]*?)(?=Instructions))/);
         const ingredients = ingredientsMatch ? ingredientsMatch[1].trim().split(',').map(ingredient => ingredient.trim()) : [];
 
-        // Extract the instructions
         const instructionsMatch = section.match(/Instructions:\n([\s\S]*?)$/);
         const instructions = instructionsMatch ? instructionsMatch[1].trim().split('\n').map(step => step.trim()) : [];
 

@@ -21,12 +21,9 @@ const InputComponent = ({ onAddItem, onDeleteItem, fridgeItems, kitchenBasics, s
     };
 
     const handleClick = (e, fridgeItem) => {
-        // Get the dimensions of the target element (the fridgeItem div)
         const targetRect = e.target.getBoundingClientRect();
-        // Calculate the x-coordinate for the left edge of the "X" (pseudo-element)
         const xRightEdge = targetRect.right;
-        const xLeftEdge = xRightEdge - 40; // Assuming the "X" and some padding is about 40px wide
-        // Check if the click is within the "X" area
+        const xLeftEdge = xRightEdge - 40;
         if (e.clientX >= xLeftEdge && e.clientX <= xRightEdge) {
             onDeleteItem(fridgeItem);
         }
@@ -40,7 +37,7 @@ const InputComponent = ({ onAddItem, onDeleteItem, fridgeItems, kitchenBasics, s
                     type="text" 
                     value={item} 
                     onChange={(e) => { setItem(e.target.value); setIsDuplicate(false); }} 
-                    placeholder="Enter food item"
+                    placeholder="Enter your food item"
                 />
                 <button type="submit">Add</button>
             </form>
@@ -61,7 +58,7 @@ const InputComponent = ({ onAddItem, onDeleteItem, fridgeItems, kitchenBasics, s
                     <div 
                         key={fridgeItem} 
                         className="fridgeItem"
-                        onClick={(e) => handleClick(e, fridgeItem)} // Attach the click handler here
+                        onClick={(e) => handleClick(e, fridgeItem)}
                     >
                         {fridgeItem}
                     </div>

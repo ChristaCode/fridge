@@ -89,7 +89,6 @@ function AdminPanel() {
       <br />
       <h2>Recipes</h2>
       <Table data={tablesData.recipes} columns={columnsRecipes} />
-      {/* <Table data={tablesData.users} columns={columnsUsers} />  */}
     </div>
   );
 }

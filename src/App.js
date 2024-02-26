@@ -39,11 +39,31 @@ const App = () => {
         });
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         setLlamaRecipes(null)
-        callAPI()
+        const dbRecipes = await checkDBRecipes()
+
+        if(dbRecipes.length === 0) {
+            console.log('calling API')
+            callAPI()
+        }
         setIsSubmitted(true);
     };
+
+    const checkDBRecipes = async () => {
+        try {
+            const response = await axios.post('/recipes/search', {
+                fridgeItems
+            });
+
+            setLlamaRecipes(response.data);
+            console.log(response.data);
+            return response.data;
+        } catch (error) {   
+            console.log(error.response ? error.response.data : 'Failed to fetch from DB');
+            setIsLoading(false);
+        }
+    }
 
     const callAPI = async () => {
         setIsLoading(true);
@@ -60,6 +80,7 @@ const App = () => {
             try {
                 console.time('API llama7b Duration');
                 const response = await axios.post('/api/recipes/huggingface', { fridgeItems, kitchenBasics });
+                console.log(response.data.recipes);
                 setLlamaRecipes(response.data.recipes);
             } catch (error) {
                 console.log(error.response ? error.response.data : 'Failed to fetch from Llama API');

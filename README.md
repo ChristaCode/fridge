@@ -47,3 +47,9 @@ This will add all of your changes to git
 Check to see if your code pushed - https://github.com/ChristaCode/fridge
 
 Heroku is configured to deploy the site once anything is pushed to the Main branch on github. It may take a few minutes to see your changes on the site.
+
+### Transfer DB to Heroku
+
+pg_dump -Fc --no-acl --no-owner -h localhost -U cookecd1 fridge > db.dump
+
+google drive link format - https://drive.google.com/uc?export=download&id=1Q7MB6smDEFd-PzpqK-3cC2_fAZc4yaXF
