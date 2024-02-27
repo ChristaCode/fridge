@@ -4,6 +4,7 @@ import RecipeListComponent from './RecipeListComponent';
 import './App.css';
 import logo from './feastFinderLogo.png';
 import axios from 'axios';
+import sidebarImage from './veggies.png'; // Import the sidebar image
 
 const App = () => {
     const [fridgeItems, setFridgeItems] = useState([]);
@@ -43,7 +44,7 @@ const App = () => {
         setLlamaRecipes(null)
         const dbRecipes = await checkDBRecipes()
 
-        if(dbRecipes.length === 0) {
+        if(dbRecipes) {
             console.log('calling API')
             callAPI()
         }
@@ -96,8 +97,10 @@ const App = () => {
 
     return (
         <div className="App">
+            <div className="content-wrapper">
             <div className="Top">
                 <img src={logo} alt="FeastFinder Logo" style={{ maxWidth: '250px', height: 'auto' }} />
+                <div>
                 <InputComponent 
                     onAddItem={handleAddItem} 
                     onDeleteItem={handleDeleteItem}
@@ -107,7 +110,9 @@ const App = () => {
                 />
                 <button onClick={handleSubmit}>Get Recipes</button>
             </div>
+            </div>
             {isSubmitted && <RecipeListComponent llamaRecipes={llamaRecipes} isLoading={isLoading} activeItemIndex={activeItemIndex} />}
+            </div>
         </div>
     );
 }

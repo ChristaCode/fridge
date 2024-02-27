@@ -1,18 +1,52 @@
 .App {
-  font-family: 'Arial', sans-serif;
-  text-align: center;
-  padding: 20px;
-  color: #333333;
-}
-
-body {
-  background-color: #f2e3d4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
 }
 
 .Top {
-  background-color: white;
-  padding: 20px;
-  margin: 20px;
+  width: 100%;
+  min-height: 25vh;
+  background-color: #fff;
+  padding: 20px 0;
+  box-sizing: border-box;
+  display: flex;        /* Enable flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center;     /* Center vertically */
+}
+
+.content-wrapper {
+  min-height: 100vh; /* This will make the content-wrapper at least the height of the viewport */
+  display: flex;
+  width: 100%;
+  flex-direction: column; /* Stack children vertically */
+  justify-content: flex-start; /* Align children to the start of the flex container */
+}
+
+.content-wrapper::before,
+.content-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 15%;
+  bottom: 0;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.content-wrapper::before {
+  left: calc(-100px); /* Adjust based on the width of the side images and desired spacing */
+  background-image: url('./veggies.png'); /* Left image path */
+}
+
+.content-wrapper::after {
+  right: calc(-100px);
+  background-image: url('./veggies.png');
+}
+
+body {
+  background-color: #f8f2e3;
 }
 
 button {
@@ -65,4 +99,11 @@ input[type="text"] {
   content: ' ✖';
   color: #c80700;
   font-weight: bold;
+}
+
+.sidebar-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
 }
