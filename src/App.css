@@ -107,3 +107,46 @@ input[type="text"] {
   left: 0;
   z-index: -1;
 }
+
+/* Global styles remain the same */
+
+@media (max-width: 768px) {
+  .Top {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .content-wrapper {
+    padding: 0 10px;
+  }
+
+  .content-wrapper::before, .content-wrapper::after {
+    display: none; /* Hide side images on smaller screens */
+  }
+
+  button {
+    font-size: 18px; /* Smaller font size for buttons */
+    padding: 10px 20px;
+  }
+
+  input[type="text"] {
+    width: 100%; /* Full width for smaller screens */
+    margin: 10px 0; /* Adjust margins */
+    font-size: 18px; /* Adjust font size */
+  }
+
+  .kitchen-basic {
+    font-size: 18px; /* Smaller font size for kitchen basics */
+    padding: 10px; /* Adjust padding */
+  }
+
+  .App {
+    padding: 20px 0; /* Add some padding on top and bottom */
+  }
+}
+
+/* You might need additional media queries for different ranges,
+   For example, for very small devices like phones in portrait mode: */
+@media (max-width: 480px) {
+  /* Further adjustments for smaller screens */
+}
