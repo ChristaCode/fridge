@@ -168,6 +168,18 @@ const parseLlamaRecipes = (text) => {
     return recipes;
 };
 
+app.use(async (req, res, next) => {
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    
+    try {
+        await pool.query('INSERT INTO visitor_ips (ip_address) VALUES ($1)', [ip]);
+    } catch (err) {
+        console.error('Failed to log address:', err.message);
+    }
+
+    next();
+});
+
 app.post('/api/recipes/huggingface', async (req, res) => {
     const { fridgeItems, kitchenBasics } = req.body;
     const cacheKey = fridgeItems.join(",") + "," + kitchenBasics.join(",");

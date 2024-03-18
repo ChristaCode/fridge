@@ -11,17 +11,26 @@
   background-color: #fff;
   padding: 20px 0;
   box-sizing: border-box;
-  display: flex;        /* Enable flexbox */
-  justify-content: center; /* Center horizontally */
-  align-items: center;     /* Center vertically */
+  display: flex;        
+  justify-content: center; 
+  align-items: center;     
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 20px 0;
 }
 
 .content-wrapper {
-  min-height: 100vh; /* This will make the content-wrapper at least the height of the viewport */
+  min-height: 100vh;
   display: flex;
   width: 100%;
-  flex-direction: column; /* Stack children vertically */
-  justify-content: flex-start; /* Align children to the start of the flex container */
+  flex-direction: column; 
+  justify-content: flex-start; 
 }
 
 .content-wrapper::before,
@@ -36,8 +45,8 @@
 }
 
 .content-wrapper::before {
-  left: calc(-100px); /* Adjust based on the width of the side images and desired spacing */
-  background-image: url('./veggies.png'); /* Left image path */
+  left: calc(-100px); 
+  background-image: url('./veggies.png'); 
 }
 
 .content-wrapper::after {
@@ -108,8 +117,6 @@ input[type="text"] {
   z-index: -1;
 }
 
-/* Global styles remain the same */
-
 @media (max-width: 768px) {
   .Top {
     flex-direction: column;
@@ -121,32 +128,75 @@ input[type="text"] {
   }
 
   .content-wrapper::before, .content-wrapper::after {
-    display: none; /* Hide side images on smaller screens */
+    display: none;
   }
 
   button {
-    font-size: 18px; /* Smaller font size for buttons */
+    font-size: 18px; 
     padding: 10px 20px;
   }
 
   input[type="text"] {
-    width: 100%; /* Full width for smaller screens */
-    margin: 10px 0; /* Adjust margins */
-    font-size: 18px; /* Adjust font size */
+    width: 100%;
+    margin: 10px 0;
+    font-size: 18px;
   }
 
   .kitchen-basic {
-    font-size: 18px; /* Smaller font size for kitchen basics */
-    padding: 10px; /* Adjust padding */
+    font-size: 18px;
+    padding: 10px;
   }
 
   .App {
-    padding: 20px 0; /* Add some padding on top and bottom */
+    padding: 20px 0;
   }
 }
 
-/* You might need additional media queries for different ranges,
-   For example, for very small devices like phones in portrait mode: */
+/* Adjustments for devices with widths up to 480px */
 @media (max-width: 480px) {
-  /* Further adjustments for smaller screens */
+  .Top img {
+    width: 200px; /* Adjust logo size for smaller screens */
+  }
+
+  input[type="text"], button {
+    font-size: 16px; /* Make text slightly smaller for ease of reading */
+    padding: 8px 16px; /* Adjust padding for comfort */
+  }
+
+  .kitchen-basic {
+    font-size: 16px; /* Make kitchen basic tags smaller */
+    padding: 8px; /* Adjust padding for smaller display */
+    margin: 4px; /* Reduce margin to save space */
+  }
+
+  /* Adjust the overall padding and margin for elements to better fit small screens */
+  .App, .Top, .container, .content-wrapper {
+    padding: 10px 5px; /* Reduce padding */
+  }
+
+  /* Ensure that elements do not stretch too much or become too small */
+  .App {
+    max-width: 100%; /* Prevent the app from exceeding the width of small devices */
+  }
+}
+
+/* Consider adding additional styles for very small or large screens */
+@media (max-width: 320px) {
+  /* Further reduce sizes and spacings for very small screens */
+  input[type="text"], button, .kitchen-basic {
+    font-size: 14px;
+  }
+}
+
+/* For landscape orientation */
+@media (max-height: 480px) and (orientation: landscape) {
+  /* Adjust sizes and layouts for landscape orientation on small devices */
+  .Top, .container, .content-wrapper {
+    flex-direction: row; /* Change direction to row for landscape view */
+    padding: 5px; /* Adjust padding for tighter spaces */
+  }
+
+  .Top img {
+    display: none; /* Consider hiding the logo if it takes too much space */
+  }
 }

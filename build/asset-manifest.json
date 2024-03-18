@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/static/css/main.73ea5d48.css",
-    "main.js": "/static/js/main.415ede16.js",
+    "main.css": "/static/css/main.ff8e97c6.css",
+    "main.js": "/static/js/main.734f2879.js",
     "static/js/651.d62c8570.chunk.js": "/static/js/651.d62c8570.chunk.js",
     "static/media/veggies.png": "/static/media/veggies.4cca2d96bcff21bfe93c.png",
     "static/media/feastFinderLogo.png": "/static/media/feastFinderLogo.057d7dc8e7434ccb4282.png",
     "index.html": "/index.html",
-    "main.73ea5d48.css.map": "/static/css/main.73ea5d48.css.map",
-    "main.415ede16.js.map": "/static/js/main.415ede16.js.map",
+    "main.ff8e97c6.css.map": "/static/css/main.ff8e97c6.css.map",
+    "main.734f2879.js.map": "/static/js/main.734f2879.js.map",
     "651.d62c8570.chunk.js.map": "/static/js/651.d62c8570.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.73ea5d48.css",
-    "static/js/main.415ede16.js"
+    "static/css/main.ff8e97c6.css",
+    "static/js/main.734f2879.js"
   ]
 }

@@ -4,7 +4,7 @@ import RecipeListComponent from './RecipeListComponent';
 import './App.css';
 import logo from './feastFinderLogo.png';
 import axios from 'axios';
-import sidebarImage from './veggies.png'; // Import the sidebar image
+import sidebarImage from './veggies.png';
 
 const App = () => {
     const [fridgeItems, setFridgeItems] = useState([]);
@@ -111,7 +111,9 @@ const App = () => {
                 <button onClick={handleSubmit}>Get Recipes</button>
             </div>
             </div>
-            {isSubmitted && <RecipeListComponent llamaRecipes={llamaRecipes} isLoading={isLoading} activeItemIndex={activeItemIndex} />}
+            <div className="container">
+                {isSubmitted && <RecipeListComponent llamaRecipes={llamaRecipes} isLoading={isLoading} activeItemIndex={activeItemIndex} />}
+            </div>
             </div>
         </div>
     );
